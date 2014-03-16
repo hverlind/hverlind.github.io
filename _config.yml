@@ -1,6 +1,6 @@
 inc:
   # Blog Information
-  title:        "CocoaNuts iOS Blog"
+  title:        "Cocoanuts iOS Blog"
   subtitle:     "Adventures in Objective-C"
   cover_image:  blog-cover.jpg
   logo:         logo.png
@@ -41,7 +41,7 @@ inc:
 
 url:         http://cocoanuts.mobi
 source:      .
-destination: ./_site
+destination: ../hverlind.github.io-master
 plugins:     ./_plugins
 layouts:     ./_layouts
 include:     ['.htaccess']
