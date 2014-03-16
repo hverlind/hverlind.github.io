@@ -1,29 +1,15 @@
----
-layout: rss-feed
----
 <?xml version="1.0"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>{{ site.blog_title }}</title>
-    <link>{{ site.url }}</link>
-    <atom:link href="{{ site.url }}/feed.xml" rel="self" type="application/rss+xml" />
-    <description>{{ site.blog_subtitle }}</description>
+    <title></title>
+    <link>http://cocoanuts.mobi</link>
+    <atom:link href="http://cocoanuts.mobi/feed.xml" rel="self" type="application/rss+xml" />
+    <description></description>
     <language>en-us</language>
-    <pubDate>{{ site.time | date: "%a, %d %b %Y %H:%M:%S %z" }}</pubDate>
-    <lastBuildDate>{{ site.time | date: "%a, %d %b %Y %H:%M:%S %z" }}</lastBuildDate>
+    <pubDate>Sun, 16 Mar 2014 14:52:14 +0000</pubDate>
+    <lastBuildDate>Sun, 16 Mar 2014 14:52:14 +0000</lastBuildDate>
 
-    {% for post in site.posts %}
-    {% unless post.draft %}
-    <item>
-      <title>{{ post.title }}</title>
-      <link>{{ site.url }}{{ post.url }}</link>
-      <pubDate>{{ post.date | date: "%a, %d %b %Y %H:%M:%S %z" }}</pubDate>
-      <author>{{ post.author_name }}</author>
-      <guid>{{ site.url }}{{ post.id }}</guid>
-      <description>{{ post.content | xml_escape }}</description>
-    </item>
-    {% endunless %}
-    {% endfor %}
+    
 
   </channel> 
 </rss>
