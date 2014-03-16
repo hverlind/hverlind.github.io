@@ -41,7 +41,7 @@ inc:
 
 url:         http://cocoanuts.mobi
 source:      .
-destination: ../hverlind.github.io
+destination: ./_site
 plugins:     ./_plugins
 layouts:     ./_layouts
 include:     ['.htaccess']
