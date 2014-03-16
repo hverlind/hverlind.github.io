@@ -6,9 +6,28 @@
     <atom:link href="http://cocoanuts.mobi/feed.xml" rel="self" type="application/rss+xml" />
     <description></description>
     <language>en-us</language>
-    <pubDate>Sun, 16 Mar 2014 14:52:14 +0000</pubDate>
-    <lastBuildDate>Sun, 16 Mar 2014 14:52:14 +0000</lastBuildDate>
+    <pubDate>Sun, 16 Mar 2014 16:44:16 +0000</pubDate>
+    <lastBuildDate>Sun, 16 Mar 2014 16:44:16 +0000</lastBuildDate>
 
+    
+    
+    <item>
+      <title>And so it begins...</title>
+      <link>http://cocoanuts.mobi/2014/03/16/webdev/</link>
+      <pubDate>Sun, 16 Mar 2014 00:00:00 +0000</pubDate>
+      <author></author>
+      <guid>http://cocoanuts.mobi/2014/03/16/webdev</guid>
+      <description>&lt;p&gt;I’ll admit it, I have never been much of a web developer. Sure, I once built a website, somewhere around the start of the century. It included a guestbook, a visitor counter and a LED ticker display. It was hosted on a free .tk domain. You get the idea. But ever since things got a bit more serious, I mostly tried to stay away from web development.&lt;/p&gt;
+
+&lt;p&gt;I once used to blog as well. At a previous company I worked for, I contributed to the technical blog once a month for three years straight. But I never had a personal blog before. My main excuse has always been that I don’t want to deal with the overhead of building a website and keeping it alive. I have considered blogging on a platform like &lt;a href=&quot;http://medium.com&quot;&gt;Medium&lt;/a&gt;, but I tend to agree with &lt;a href=&quot;http://www.hanselman.com/blog/YourWordsAreWasted.aspx&quot;&gt;Scott Hanselman&lt;/a&gt;, who claims that as a developer, not only should you have your own blog, but you should also buy your own domain in order to keep control over your content.&lt;/p&gt;
+
+&lt;p&gt;So what changed? Two things. First, I came across this post by &lt;a href=&quot;http://unicornfree.com/2014/dont-fave-this-post-how-to-really-launch-in-2014&quot;&gt;Amy Hoy&lt;/a&gt;. Her advice to just start small – one tiny step after another – may sound pretty obvious, but it was still a bit of a wake up call for me. Second, I realized just how much web development has matured over the past few years and how easy it has become to set up, deploy and maintain something like a static blog site.&lt;/p&gt;
+
+&lt;p&gt;You don’t need to know any Ruby to install gems like &lt;a href=&quot;http://middlemanapp.com&quot;&gt;Middleman&lt;/a&gt; or &lt;a href=&quot;http://jekyllrb.com&quot;&gt;Jekyll&lt;/a&gt;. You just play around with some open source templates until you find something you like. You link your domain to &lt;a href=&quot;http://pages.github.com&quot;&gt;GitHub Pages&lt;/a&gt; and you can be up and running in a matter of minutes. Call me old-fashioned, but I think there’s something quite magical about being able to deploy a website simply by typing git push.&lt;/p&gt;
+
+&lt;p&gt;So here you have it. A first tiny step. The beginning of something. No promises about frequent updates. No begging to subscribe to my RSS feed. But no more excuses either.&lt;/p&gt;</description>
+    </item>
+    
     
 
   </channel> 
