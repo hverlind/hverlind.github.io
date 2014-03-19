@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>First impressions of ReactiveCocoa &mdash; Cocoanuts iOS Blog</title>
+    <link href="https://fonts.googleapis.com/css?family=Droid+Sans:400,700" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="/assets/main.css">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="apple-touch-icon" href="/images/logo.png"/>
+    <link href="/feed.xml" rel="alternate" type="application/rss+xml" title="Cocoanuts iOS Blog" />
+    <meta name="title" content="First impressions of ReactiveCocoa ">
+    <link rel="canonical" href="http://cocoanuts.mobi/2014/03/19/functional/">
+     
+           
+    <meta property="og:title" content="First impressions of ReactiveCocoa "/>
+    <meta property="og:url" content="http://cocoanuts.mobi/2014/03/19/functional/"/>
+    
+    
+    <meta property="og:description" content="I had been looking forward to learn more about this framework ever since I first heard about it. The talk was inspiring, and I bought the book the next day, but now we are two weeks later and I'm still not sure what to really think of it..."/>
+    <meta name="description" content="I had been looking forward to learn more about this framework ever since I first heard about it. The talk was inspiring, and I bought the book the next day, but now we are two weeks later and I'm still not sure what to really think of it..."/>
+    
+    <meta property="og:site_name" content="Cocoanuts iOS Blog">     
+</head>
+<body>
+    
+<section class="site-nav">
+    <header>
+        <nav id="navigation">
+            <a class="brand" href="/">
+                <img src="/images/logo.png" alt="CocoaNuts">
+            </a>
+            <!--<a href="/" class="home">Blog</a>
+            <a href="http://inthepocket.mobi/">About</a>-->
+        </nav>
+    </header>
+</section>
+
+
+<article>
+
+    <div class="container">
+        <header>
+            <div class="meta">
+                By <address><a rel="author" href="" title="Hannes Verlinde" target="_blank">Hannes Verlinde</a></address> &mdash;
+                <time pubdate datetime="2014-19-March" title="March 19, 2014">March 19, 2014</time>
+            </div>
+            <h1 class="title">First impressions of ReactiveCocoa</h1>
+            <h2 class="subtitle">And how functionals help you produce readable code without going all-in with FRP</h2>
+        </header>
+
+        <section>
+            <p>Earlier this month I was in Amsterdam to talk at <a href="http://mdevcon.com">mdevcon</a>. Right before I went up on stage, I watched <a href="http://ashfurrow.com">Ash Furrow</a>’s introduction to <a href="https://github.com/ReactiveCocoa/ReactiveCocoa">ReactiveCocoa</a>. I had been looking forward to learn more about this framework ever since I first heard about it. The talk was inspiring, and I bought <a href="https://leanpub.com/iosfrp">the book</a> the next day, but now we are two weeks later and I’m still not sure what to really think of it.</p>
+
+<p>To be clear, I have always been a fan of functional programming. I spent most of my last year at university writing an XML editor in Haskell, using <a href="http://conal.net/fran/">Functional Reactive Animation</a> for the UI. And although I have never used a purely functional programming language in my professional life as a software developer, I have often experienced how applying functional concepts in imperative programming languages produces code that is more easy to read, understand and maintain.</p>
+
+<p>Back in my C++ days, I was taught to liberally use <code>boost::bind</code> and friends. Later on, as a .NET developer, I loved to refactor C# code using LINQ operators. And of course, in Objective-C we now have blocks, so I tend to use <code>enumerateObjectsUsingBlock</code>, <code>sortedArrayUsingComparator</code> and <code>filteredArrayUsingPredicate</code> whenever I can.</p>
+
+<p>Now I think we can all agree that blocks are not the end-all solution to writing declarative code in Objective-C. In fact, the thing I missed most when switching from C# was the ability to chain higher-order functions to filter, map and fold collections with lazy evaluation, like you can with the <code>Where</code>, <code>Select</code> and <code>Aggregate</code> operators from LINQ.</p>
+
+<p>Fortunately, Objective-C libraries exist that offer exactly this functionality. <a href="https://github.com/robrix/RXCollections">RXCollections</a> is one such library, and it is used in Ash Furrow’s book to dip the readers’ feet into the FRP water. A similar library is <a href="http://underscorem.org">Underscore.m</a> (inspired by <a href="http://underscorejs.org">underscore.js</a>), which can be used like this to calculate the longest common number prefix in a set of strings:</p>
+<div class='highlight'><pre><code class='objc'><span class='n'>NSArray</span> <span class='o'>*</span><span class='n'>inputStrings</span> <span class='o'>=</span> <span class='p'>@[</span> <span class='s'>@&quot;67034X&quot;</span><span class='p'>,</span> <span class='s'>@&quot;67039XXX&quot;</span><span class='p'>,</span> <span class='s'>@&quot;XX&quot;</span><span class='p'>,</span> <span class='s'>@&quot;6704&quot;</span><span class='p'>,</span> <span class='s'>@&quot;67004&quot;</span><span class='p'>,</span> <span class='s'>@&quot;670X&quot;</span> <span class='p'>];</span>
+
+<span class='n'>NSCharacterSet</span> <span class='o'>*</span><span class='n'>nonDigits</span> <span class='o'>=</span> <span class='p'>[[</span><span class='n'>NSCharacterSet</span> <span class='n'>decimalDigitCharacterSet</span><span class='p'>]</span> <span class='n'>invertedSet</span><span class='p'>];</span>
+
+<span class='n'>NSString</span> <span class='o'>*</span><span class='n'>commonPrefix</span> <span class='o'>=</span> <span class='n'>Underscore</span><span class='p'>.</span><span class='n'>array</span><span class='p'>(</span><span class='n'>inputStrings</span><span class='p'>)</span>
+    <span class='p'>.</span><span class='n'>map</span><span class='p'>(</span><span class='o'>^</span><span class='p'>(</span><span class='n'>NSString</span> <span class='o'>*</span><span class='n'>value</span><span class='p'>)</span> <span class='p'>{</span>
+        <span class='k'>return</span> <span class='p'>[</span><span class='n'>value</span> <span class='n'>stringByTrimmingCharactersInSet</span><span class='o'>:</span><span class='n'>nonDigits</span><span class='p'>];</span>
+    <span class='p'>})</span>
+    <span class='p'>.</span><span class='n'>filter</span><span class='p'>(</span><span class='o'>^</span><span class='kt'>BOOL</span><span class='p'>(</span><span class='n'>NSString</span> <span class='o'>*</span><span class='n'>value</span><span class='p'>)</span> <span class='p'>{</span>
+        <span class='k'>return</span> <span class='p'>[</span><span class='n'>value</span> <span class='n'>length</span><span class='p'>]</span> <span class='o'>&gt;</span> <span class='mi'>0</span><span class='p'>;</span>
+    <span class='p'>})</span>
+    <span class='p'>.</span><span class='n'>reduce</span><span class='p'>(</span><span class='nb'>nil</span><span class='p'>,</span> <span class='o'>^</span><span class='p'>(</span><span class='n'>NSString</span> <span class='o'>*</span><span class='n'>accumulator</span><span class='p'>,</span> <span class='n'>NSString</span> <span class='o'>*</span><span class='n'>value</span><span class='p'>)</span> <span class='p'>{</span>
+        <span class='k'>return</span> <span class='n'>accumulator</span> <span class='o'>?</span> <span class='p'>[</span><span class='n'>accumulator</span> <span class='n'>commonPrefixWithString</span><span class='o'>:</span><span class='n'>value</span> <span class='n'>options</span><span class='o'>:</span><span class='mi'>0</span><span class='p'>]</span> <span class='o'>:</span> <span class='n'>value</span><span class='p'>;</span>
+    <span class='p'>});</span> <span class='c1'>// yields @&quot;607&quot;</span>
+</code></pre></div>
+<p>This code is powerful and elegant at the same time, and it is a typical example of how using functionals in an imperative context can lead to clearer code. In fact you can accomplish the exact same thing in ReactiveCocoa with an <code>RACSequence</code>:</p>
+<div class='highlight'><pre><code class='objc'><span class='n'>NSString</span> <span class='o'>*</span><span class='n'>commonPrefix</span> <span class='o'>=</span> <span class='p'>[[[</span><span class='n'>inputStrings</span><span class='p'>.</span><span class='n'>rac_sequence</span>
+    <span class='nl'>map:</span><span class='o'>^</span><span class='p'>(</span><span class='n'>NSString</span> <span class='o'>*</span><span class='n'>value</span><span class='p'>)</span> <span class='p'>{</span>
+        <span class='k'>return</span> <span class='p'>[</span><span class='n'>value</span> <span class='n'>stringByTrimmingCharactersInSet</span><span class='o'>:</span><span class='n'>nonDigits</span><span class='p'>];</span>
+    <span class='p'>}]</span>
+    <span class='nl'>filter:</span><span class='o'>^</span><span class='kt'>BOOL</span><span class='p'>(</span><span class='n'>NSString</span> <span class='o'>*</span><span class='n'>value</span><span class='p'>)</span> <span class='p'>{</span>
+        <span class='k'>return</span> <span class='p'>[</span><span class='n'>value</span> <span class='n'>length</span><span class='p'>]</span> <span class='o'>&gt;</span> <span class='mi'>0</span><span class='p'>;</span>
+    <span class='p'>}]</span>
+    <span class='nl'>foldLeftWithStart:</span><span class='nb'>nil</span> <span class='n'>reduce</span><span class='o'>:^</span><span class='p'>(</span><span class='n'>NSString</span> <span class='o'>*</span><span class='n'>accumulator</span><span class='p'>,</span> <span class='n'>NSString</span> <span class='o'>*</span><span class='n'>value</span><span class='p'>)</span> <span class='p'>{</span>
+        <span class='k'>return</span> <span class='n'>accumulator</span> <span class='o'>?</span> <span class='p'>[</span><span class='n'>accumulator</span> <span class='n'>commonPrefixWithString</span><span class='o'>:</span><span class='n'>value</span> <span class='n'>options</span><span class='o'>:</span><span class='mi'>0</span><span class='p'>]</span> <span class='o'>:</span> <span class='n'>value</span><span class='p'>;</span>
+    <span class='p'>}];</span>
+</code></pre></div>
+<p>But of course ReactiveCocoa is a lot more ambitious than this. Introducing Functional Reactive Programming in your code requires a real paradigm shift and forces you to rethink what programs, inputs and outputs really are. I do like the premise of FRP, and some of the ReactiveCocoa examples (e.g. chaining dependent network requests) look very convincing to me, but I am still wondering to what extent this can be applied in real life projects.</p>
+
+<p>For starters, it seems that quite a bit of boilerplate code is needed to lift the behavior of existing classes to the FRP signal space. For common UI components like buttons and switches, this functionality is provided through built in categories, e.g. there is an <code>RACSignalSupport</code> category on <code>UITextField</code> that defines an <code>rac_textSignal</code>. If you want to use other classes with ReactiveCocoa, you will need to do the lifting yourself.</p>
+
+<p>Since I’ve been working a lot with iBeacons lately, I thought it might be a good idea to try and rewrite some of that code using ReactiveCocoa. After all, we are constantly talking about beacon <em>signals</em>, so I expected this to be a good match for FRP. In an imperative context, you request an instance of the <code>CLLocationManager</code> class to start ranging beacons in a certain region, and you observe the results by implementing the corresponding delegate method. Using ReactiveCocoa, this is the code I came up with to turn the observed beacon data into an <code>RACSignal</code>:</p>
+<div class='highlight'><pre><code class='objc'><span class='n'>RACRangeSignal</span> <span class='o'>*</span><span class='n'>rangeSignal</span> <span class='o'>=</span> 
+    <span class='p'>[[[</span><span class='n'>self</span> <span class='n'>rac_signalForSelector</span><span class='o'>:</span><span class='k'>@selector</span><span class='p'>(</span><span class='n'>locationManager</span><span class='o'>:</span><span class='n'>didRangeBeacons</span><span class='o'>:</span><span class='n'>inRegion</span><span class='o'>:</span><span class='p'>)</span>
+                     <span class='nl'>fromProtocol:</span><span class='p'>@</span><span class='n'>protocol</span><span class='p'>(</span><span class='n'>CLLocationManagerDelegate</span><span class='p'>)]</span>
+    <span class='nl'>reduceEach:</span><span class='o'>^</span><span class='p'>(</span><span class='n'>CLLocationManager</span> <span class='o'>*</span><span class='n'>manager</span><span class='p'>,</span> <span class='n'>NSArray</span> <span class='o'>*</span><span class='n'>beacons</span><span class='p'>,</span> <span class='n'>CLRegion</span> <span class='o'>*</span><span class='n'>region</span><span class='p'>)</span> <span class='p'>{</span>
+        <span class='k'>return</span> <span class='p'>[</span><span class='n'>beacons</span><span class='p'>.</span><span class='n'>rac_sequence</span> <span class='n'>signal</span><span class='p'>];</span>
+    <span class='p'>}]</span> <span class='n'>concat</span><span class='p'>];</span>
+</code></pre></div>
+<p>Now I might be missing some subtle ReactiveCocoa shortcuts that would allow me to write this in a more elegant way, and maybe this isn’t such a good use case for FRP after all, but an example like this one won’t exactly help to convince my co-workers (or even myself) to start using ReactiveCocoa in large scale projects.</p>
+
+<p>Don’t get me wrong. I think ReactiveCocoa is pretty cool. I certainly like it better than <a href="http://blog.metaobject.com/2014/03/the-siren-call-of-kvo-and-cocoa-bindings.html">KVO and bindings</a>. But it’s also a pretty big step. Maybe I just need a bit more time and practice. Or maybe I should start small by applying it to very restricted subsets of projects. And in the meantime, I’ll keep trying to convince my colleagues to adopt block based syntax and higher order functionals.</p>
+            
+<div class="social">
+    <div>
+        <a href="https://twitter.com/share" class="twitter-share-button"  data-text="First impressions of ReactiveCocoa" data-related="hverlind">Tweet</a>
+    </div>
+    
+    
+    
+    
+    
+</div>
+
+        </section>
+
+        <footer>
+            <address>
+               <img src="/images/avatar.png">
+                <p>Written by <strong><a rel="author" href="https://twitter.com/hverlind" title="" target="_blank">Hannes Verlinde</a></strong><br>
+                <span class="muted">iOS Developer at In the Pocket</span>
+                </p>
+            </address>
+
+        </footer>
+
+        
+    </div>
+</article>
+
+
+<footer class="site-footer">
+    <div class="container">
+        &copy; 2014 <a href="https://twitter.com/hverlind" title="Follow on Twitter" target="_blank">Hannes Verlinde</a> &middot; All rights reserved
+        
+        <nav class="social">
+            <a href="https://twitter.com/hverlind" title="Follow on Twitter" target="_blank"><i class="icon icon-twitter black"></i></a>
+            <a href="/feed" title="Subscribe to RSS feed" target="_blank"><i class="icon icon-rss black"></i></a>
+        </nav>
+        <p>Building your next app at <a href="http://inthepocket.mobi">Europe's finest mobile agency</a></p>
+    </div>
+</footer>
+
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script src="/assets/main.js"></script>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+
+
+
+  <!--google analytics tracking code here-->
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+     m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+     })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+     
+     ga('create', 'UA-49046887-1', 'cocoanuts.mobi');
+     ga('send', 'pageview');
+     
+</script>
+
+
+
+</body>
+</html>
