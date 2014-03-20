@@ -38,7 +38,7 @@ NSString *commonPrefix = Underscore.array(inputStrings)
     })
     .reduce(nil, ^(NSString *accumulator, NSString *value) {
         return accumulator ? [accumulator commonPrefixWithString:value options:0] : value;
-    }); // yields @"607"
+    }); // yields @"670”
 
 {% endhighlight %}
 
