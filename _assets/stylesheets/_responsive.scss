@@ -4,7 +4,7 @@
         display:none;
     }
     
-    .container > header, .container > section, .container > footer {
+    .container > header, .container > section, .container > footer, .container > header.about {
         padding:0;
         margin:1.5em 10%;
     }
@@ -20,7 +20,7 @@
     article {
         padding-top:30px;
         
-        .container > header, .container > section, .container > footer {
+        .container > header, .container > section, .container > footer, .container > header.about {
             padding:0;
             margin:1.5em 10%;
         }
