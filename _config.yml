@@ -6,7 +6,8 @@ inc:
   subtitle:         "Adventures in Objective-C"
   cover_image:      blog-cover.jpg
   logo:             logo.png
-  
+  about_image:      about.jpg
+
   # Company information
   company:      Hannes Verlinde
   url:          http://cocoanuts.mobi

@@ -7,6 +7,14 @@ article {
         margin:0 8em;
     }
 
+    .container > header.about {
+        margin:0 8em;
+
+        &::after {
+            display:none;
+        }
+    }
+
     .social {
         height:40px;
         padding:10px 0;
