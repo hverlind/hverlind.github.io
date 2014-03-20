@@ -1,26 +1,21 @@
 inc:
   # Blog Information
-  blog_title:	"Cocoanuts iOS Blog"
-  blog_subtitle:"Adventures in Objective-C"
-  title:        "Cocoanuts iOS Blog"
-  subtitle:     "Adventures in Objective-C"
-  cover_image:  blog-cover.jpg
-  logo:         logo.png
+  blog_title:       "Cocoanuts iOS Blog"
+  blog_subtitle:    "Adventures in Objective-C"
+  title:            "Cocoanuts iOS Blog"
+  subtitle:         "Adventures in Objective-C"
+  cover_image:      blog-cover.jpg
+  logo:             logo.png
   
   # Company information
   company:      Hannes Verlinde
   url:          http://cocoanuts.mobi
   twitter:      hverlind
-  #about_link:   http://inthepocket.mobi
-  
-  # Product Information
-  product_link: http://inthepocket.mobi/
-  tagline:      "Building your next app at Europe's finest mobile agency..."
-  
+
   # Comments
   disqus:
     # Eg. "exampleblog" Set to false to disable comments
-    shortname:  false
+    shortname:  cocoanutsiosblog
   
   # Sharing settings
   sharing:
