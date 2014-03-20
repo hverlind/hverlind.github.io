@@ -72,7 +72,7 @@
     <span class='p'>})</span>
     <span class='p'>.</span><span class='n'>reduce</span><span class='p'>(</span><span class='nb'>nil</span><span class='p'>,</span> <span class='o'>^</span><span class='p'>(</span><span class='n'>NSString</span> <span class='o'>*</span><span class='n'>accumulator</span><span class='p'>,</span> <span class='n'>NSString</span> <span class='o'>*</span><span class='n'>value</span><span class='p'>)</span> <span class='p'>{</span>
         <span class='k'>return</span> <span class='n'>accumulator</span> <span class='o'>?</span> <span class='p'>[</span><span class='n'>accumulator</span> <span class='n'>commonPrefixWithString</span><span class='o'>:</span><span class='n'>value</span> <span class='n'>options</span><span class='o'>:</span><span class='mi'>0</span><span class='p'>]</span> <span class='o'>:</span> <span class='n'>value</span><span class='p'>;</span>
-    <span class='p'>});</span> <span class='c1'>// yields @&quot;607&quot;</span>
+    <span class='p'>});</span> <span class='c1'>// yields @&quot;670”</span>
 </code></pre></div>
 <p>This code is powerful and elegant at the same time, and it is a typical example of how using functionals in an imperative context can lead to clearer code. In fact you can accomplish the exact same thing in ReactiveCocoa with an <code>RACSequence</code>:</p>
 <div class='highlight'><pre><code class='objc'><span class='n'>NSString</span> <span class='o'>*</span><span class='n'>commonPrefix</span> <span class='o'>=</span> <span class='p'>[[[</span><span class='n'>inputStrings</span><span class='p'>.</span><span class='n'>rac_sequence</span>

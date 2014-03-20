@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title></title>
+    <title>Cocoanuts iOS Blog</title>
     <link>http://cocoanuts.mobi</link>
     <atom:link href="http://cocoanuts.mobi/feed.xml" rel="self" type="application/rss+xml" />
-    <description></description>
+    <description>Adventures in Objective-C</description>
     <language>en-us</language>
-    <pubDate>Wed, 19 Mar 2014 21:54:49 +0000</pubDate>
-    <lastBuildDate>Wed, 19 Mar 2014 21:54:49 +0000</lastBuildDate>
+    <pubDate>Thu, 20 Mar 2014 07:32:56 +0000</pubDate>
+    <lastBuildDate>Thu, 20 Mar 2014 07:32:56 +0000</lastBuildDate>
 
     
     
@@ -39,7 +39,7 @@
     &lt;span class=&#39;p&#39;&gt;})&lt;/span&gt;
     &lt;span class=&#39;p&#39;&gt;.&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;reduce&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;(&lt;/span&gt;&lt;span class=&#39;nb&#39;&gt;nil&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;,&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;^&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;(&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;NSString&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;*&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;accumulator&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;,&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;NSString&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;*&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;value&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;)&lt;/span&gt; &lt;span class=&#39;p&#39;&gt;{&lt;/span&gt;
         &lt;span class=&#39;k&#39;&gt;return&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;accumulator&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;?&lt;/span&gt; &lt;span class=&#39;p&#39;&gt;[&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;accumulator&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;commonPrefixWithString&lt;/span&gt;&lt;span class=&#39;o&#39;&gt;:&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;value&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;options&lt;/span&gt;&lt;span class=&#39;o&#39;&gt;:&lt;/span&gt;&lt;span class=&#39;mi&#39;&gt;0&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;]&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;:&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;value&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;;&lt;/span&gt;
-    &lt;span class=&#39;p&#39;&gt;});&lt;/span&gt; &lt;span class=&#39;c1&#39;&gt;// yields @&amp;quot;607&amp;quot;&lt;/span&gt;
+    &lt;span class=&#39;p&#39;&gt;});&lt;/span&gt; &lt;span class=&#39;c1&#39;&gt;// yields @&amp;quot;670”&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;This code is powerful and elegant at the same time, and it is a typical example of how using functionals in an imperative context can lead to clearer code. In fact you can accomplish the exact same thing in ReactiveCocoa with an &lt;code&gt;RACSequence&lt;/code&gt;:&lt;/p&gt;
 &lt;div class=&#39;highlight&#39;&gt;&lt;pre&gt;&lt;code class=&#39;objc&#39;&gt;&lt;span class=&#39;n&#39;&gt;NSString&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;*&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;commonPrefix&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;=&lt;/span&gt; &lt;span class=&#39;p&#39;&gt;[[[&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;inputStrings&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;.&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;rac_sequence&lt;/span&gt;
