@@ -25,20 +25,20 @@ Fortunately, Objective-C libraries exist that offer exactly this functionality. 
 
 {% highlight objc %}
 
-NSArray *inputStrings = @[ @"67034X", @"67039XXX", @"XX", @"6704", @"67004", @"670X" ];
+    NSArray *inputStrings = @[ @"67034X", @"67039XXX", @"XX", @"6704", @"67004", @"670X" ];
 
-NSCharacterSet *nonDigits = [[NSCharacterSet decimalDigitCharacterSet] invertedSet];
+    NSCharacterSet *nonDigits = [[NSCharacterSet decimalDigitCharacterSet] invertedSet];
 
-NSString *commonPrefix = Underscore.array(inputStrings)
-    .map(^(NSString *value) {
-        return [value stringByTrimmingCharactersInSet:nonDigits];
-    })
-    .filter(^BOOL(NSString *value) {
-        return [value length] > 0;
-    })
-    .reduce(nil, ^(NSString *accumulator, NSString *value) {
-        return accumulator ? [accumulator commonPrefixWithString:value options:0] : value;
-    }); // yields @"670”
+    NSString *commonPrefix = Underscore.array(inputStrings)
+        .map(^(NSString *value) {
+           return [value stringByTrimmingCharactersInSet:nonDigits];
+        })
+        .filter(^BOOL(NSString *value) {
+           return [value length] > 0;
+        })
+        .reduce(nil, ^(NSString *accumulator, NSString *value) {
+           return accumulator ? [accumulator commonPrefixWithString:value options:0] : value;
+        }); // yields @"670”
 
 {% endhighlight %}
 
@@ -46,16 +46,16 @@ This code is powerful and elegant at the same time, and it is a typical example 
 
 {% highlight objc %}
 
-NSString *commonPrefix = [[[inputStrings.rac_sequence
-    map:^(NSString *value) {
-        return [value stringByTrimmingCharactersInSet:nonDigits];
-    }]
-    filter:^BOOL(NSString *value) {
-        return [value length] > 0;
-    }]
-    foldLeftWithStart:nil reduce:^(NSString *accumulator, NSString *value) {
-        return accumulator ? [accumulator commonPrefixWithString:value options:0] : value;
-    }];
+    NSString *commonPrefix = [[[inputStrings.rac_sequence
+        map:^(NSString *value) {
+           return [value stringByTrimmingCharactersInSet:nonDigits];
+        }]
+        filter:^BOOL(NSString *value) {
+           return [value length] > 0;
+        }]
+        foldLeftWithStart:nil reduce:^(NSString *accumulator, NSString *value) {
+           return accumulator ? [accumulator commonPrefixWithString:value options:0] : value;
+        }];
 
 {% endhighlight %}
 
@@ -67,12 +67,12 @@ Since I've been working a lot with iBeacons lately, I thought it might be a good
 
 {% highlight objc %}
 
-RACRangeSignal *rangeSignal = 
-    [[[self rac_signalForSelector:@selector(locationManager:didRangeBeacons:inRegion:)
-                     fromProtocol:@protocol(CLLocationManagerDelegate)]
-    reduceEach:^(CLLocationManager *manager, NSArray *beacons, CLRegion *region) {
-        return [beacons.rac_sequence signal];
-    }] concat];
+    RACRangeSignal *rangeSignal = 
+        [[[self rac_signalForSelector:@selector(locationManager:didRangeBeacons:inRegion:)
+                         fromProtocol:@protocol(CLLocationManagerDelegate)]
+        reduceEach:^(CLLocationManager *manager, NSArray *beacons, CLRegion *region) {
+            return [beacons.rac_sequence signal];
+        }] concat];
 
 {% endhighlight %}
 
