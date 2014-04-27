@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asynchronous image loading in fast scrolling table cells &mdash; Cocoanuts iOS Blog</title>
+    <link href="https://fonts.googleapis.com/css?family=Droid+Sans:400,700" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="/assets/main.css">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="apple-touch-icon" href="/images/logo.png"/>
+    <link href="/feed.xml" rel="alternate" type="application/rss+xml" title="Cocoanuts iOS Blog" />
+    <meta name="title" content="Asynchronous image loading in fast scrolling table cells ">
+    <link rel="canonical" href="http://cocoanuts.mobi/2014/04/27/fastscroll/">
+     
+           
+    <meta property="og:title" content="Asynchronous image loading in fast scrolling table cells "/>
+    <meta property="og:url" content="http://cocoanuts.mobi/2014/04/27/fastscroll/"/>
+    
+    
+    <meta property="og:description" content="In the UIImageView+AFNetworking implementation, certain decisions are made to optimize for loading images currently on screen, which is done by cancelling previous requests for offscreen views. This behavior can interfere with cell reuse behavior, which may result in images not being loaded correctly..."/>
+    <meta name="description" content="In the UIImageView+AFNetworking implementation, certain decisions are made to optimize for loading images currently on screen, which is done by cancelling previous requests for offscreen views. This behavior can interfere with cell reuse behavior, which may result in images not being loaded correctly..."/>
+    
+    <meta property="og:site_name" content="Cocoanuts iOS Blog">     
+</head>
+<body>
+    
+<section class="site-nav">
+    <header>
+        <nav id="navigation">
+            <a class="brand" href="/">
+                <img src="/images/logo.png" alt="Cocoanuts">
+            </a>
+        </nav>
+        <nav id="links">
+            <a href="/" class="home">Blog</a>
+            <a href="/about">About</a>
+        </nav>
+    </header>
+</section>
+
+
+<article>
+
+    <div class="container">
+        <header>
+            <div class="meta">
+                <time pubdate datetime="2014-27-April" title="April 27, 2014">April 27, 2014</time>
+            </div>
+            <h1 class="title">Asynchronous image loading in fast scrolling table cells</h1>
+            <h2 class="subtitle">Working around UIImageView+AFNetworking limitations</h2>
+        </header>
+
+        <section>
+            <p>AFNetworking’s UIImageView category must be one of its most popular features. The functionality it offers is so commonly needed, and the implementation details are hidden in such a way that you would almost forget that a third party network library is being used. For instance, consider the following simple example where a batch of random images is loaded in a plain table view.</p>
+<div class='highlight'><pre><code class='objc'>    <span class='k'>@implementation</span> <span class='nc'>TableViewController</span>
+
+    <span class='o'>-</span> <span class='p'>(</span><span class='n'>NSArray</span> <span class='o'>*</span><span class='p'>)</span><span class='n'>imageURLs</span>
+    <span class='p'>{</span>
+        <span class='k'>if</span> <span class='p'>(</span><span class='o'>!</span><span class='n'>_imageURLs</span><span class='p'>)</span>
+        <span class='p'>{</span>
+            <span class='n'>NSMutableArray</span> <span class='o'>*</span><span class='n'>imageURLs</span> <span class='o'>=</span> <span class='p'>[</span><span class='n'>NSMutableArray</span> <span class='n'>array</span><span class='p'>];</span>
+            
+            <span class='k'>for</span> <span class='p'>(</span><span class='n'>NSInteger</span> <span class='n'>index</span> <span class='o'>=</span> <span class='mi'>0</span><span class='p'>;</span> <span class='n'>index</span> <span class='o'>&lt;</span> <span class='mi'>100</span><span class='p'>;</span> <span class='o'>++</span><span class='n'>index</span><span class='p'>)</span>
+            <span class='p'>{</span>
+                <span class='p'>[</span><span class='n'>imageURLs</span> <span class='n'>addObject</span><span class='o'>:</span><span class='p'>[</span><span class='n'>NSString</span> <span class='n'>stringWithFormat</span><span class='o'>:</span>
+                                      <span class='s'>@&quot;http://dummyimage.com/88/%06X/%06X&amp;text=%d&quot;</span><span class='p'>,</span>
+                                      <span class='n'>arc4random</span><span class='p'>()</span> <span class='o'>%</span> <span class='mh'>0xFFFFFF</span><span class='p'>,</span>
+                                      <span class='n'>arc4random</span><span class='p'>()</span> <span class='o'>%</span> <span class='mh'>0xFFFFFF</span><span class='p'>,</span>
+                                      <span class='n'>index</span> <span class='o'>+</span> <span class='mi'>1</span><span class='p'>]];</span>
+            <span class='p'>}</span>
+            
+            <span class='n'>_imageURLs</span> <span class='o'>=</span> <span class='n'>imageURLs</span><span class='p'>;</span>
+        <span class='p'>}</span>
+        
+        <span class='k'>return</span> <span class='n'>_imageURLs</span><span class='p'>;</span>
+    <span class='p'>}</span>
+
+    <span class='o'>-</span> <span class='p'>(</span><span class='kt'>void</span><span class='p'>)</span><span class='n'>viewDidLoad</span>
+    <span class='p'>{</span>
+        <span class='p'>[</span><span class='n'>super</span> <span class='n'>viewDidLoad</span><span class='p'>];</span>
+        
+        <span class='p'>[</span><span class='n'>self</span><span class='p'>.</span><span class='n'>tableView</span> <span class='n'>registerClass</span><span class='o'>:</span><span class='p'>[</span><span class='n'>UITableViewCell</span> <span class='n'>class</span><span class='p'>]</span>
+               <span class='nl'>forCellReuseIdentifier:</span><span class='s'>@&quot;TableViewCell&quot;</span><span class='p'>];</span>
+    <span class='p'>}</span>
+
+    <span class='o'>-</span> <span class='p'>(</span><span class='n'>NSInteger</span><span class='p'>)</span><span class='n'>numberOfSectionsInTableView</span><span class='o'>:</span><span class='p'>(</span><span class='n'>UITableView</span> <span class='o'>*</span><span class='p'>)</span><span class='n'>tableView</span>
+    <span class='p'>{</span>
+        <span class='k'>return</span> <span class='mi'>1</span><span class='p'>;</span>
+    <span class='p'>}</span>
+
+    <span class='o'>-</span> <span class='p'>(</span><span class='n'>NSInteger</span><span class='p'>)</span><span class='n'>tableView</span><span class='o'>:</span><span class='p'>(</span><span class='n'>UITableView</span> <span class='o'>*</span><span class='p'>)</span><span class='n'>tableView</span> <span class='n'>numberOfRowsInSection</span><span class='o'>:</span><span class='p'>(</span><span class='n'>NSInteger</span><span class='p'>)</span><span class='n'>section</span>
+    <span class='p'>{</span>
+        <span class='k'>return</span> <span class='p'>[</span><span class='n'>self</span><span class='p'>.</span><span class='n'>imageURLs</span> <span class='n'>count</span><span class='p'>];</span>
+    <span class='p'>}</span>
+
+    <span class='o'>-</span> <span class='p'>(</span><span class='n'>UITableViewCell</span> <span class='o'>*</span><span class='p'>)</span><span class='n'>tableView</span><span class='o'>:</span><span class='p'>(</span><span class='n'>UITableView</span> <span class='o'>*</span><span class='p'>)</span><span class='n'>tableView</span>
+             <span class='nl'>cellForRowAtIndexPath:</span><span class='p'>(</span><span class='n'>NSIndexPath</span> <span class='o'>*</span><span class='p'>)</span><span class='n'>indexPath</span>
+    <span class='p'>{</span>
+        <span class='n'>UITableViewCell</span> <span class='o'>*</span><span class='n'>cell</span> <span class='o'>=</span> <span class='p'>[</span><span class='n'>tableView</span> <span class='n'>dequeueReusableCellWithIdentifier</span><span class='o'>:</span><span class='s'>@&quot;TableViewCell&quot;</span>
+                                                                <span class='nl'>forIndexPath:</span><span class='n'>indexPath</span><span class='p'>];</span>
+        
+        <span class='n'>cell</span><span class='p'>.</span><span class='n'>imageView</span><span class='p'>.</span><span class='n'>image</span> <span class='o'>=</span> <span class='p'>[</span><span class='n'>UIImage</span> <span class='n'>imageNamed</span><span class='o'>:</span><span class='s'>@&quot;placeholder&quot;</span><span class='p'>];</span>
+      
+        <span class='p'>[</span><span class='n'>cell</span><span class='p'>.</span><span class='n'>imageView</span> <span class='n'>setImageWithURL</span><span class='o'>:</span><span class='p'>[</span><span class='n'>NSURL</span> <span class='n'>URLWithString</span><span class='o'>:</span><span class='n'>self</span><span class='p'>.</span><span class='n'>imageURLs</span><span class='p'>[</span><span class='n'>indexPath</span><span class='p'>.</span><span class='n'>row</span><span class='p'>]]];</span>
+        
+        <span class='k'>return</span> <span class='n'>cell</span><span class='p'>;</span>
+    <span class='p'>}</span>
+
+    <span class='k'>@end</span>
+</code></pre></div>
+<p>One downside of using this convenient category is that it can lead to undesired artifacts when scrolling fast in a table view. In the UIImageView+AFNetworking implementation, certain decisions are made to optimize for loading images currently on screen, which is done by cancelling previous requests for offscreen views. This behavior can interfere with cell reuse behavior, which may result in images not being loaded correctly, as shown below:</p>
+
+<p><img src='/images/2014042701.gif' /></p>
+
+<p>To figure out what can be done about these unwanted side-effects, we switch to a lower level implementation using an <code>AFHTTPRequestOperationManager</code> and its <code>GET:parameters:success:failure</code> method.</p>
+<div class='highlight'><pre><code class='objc'>    <span class='o'>-</span> <span class='p'>(</span><span class='n'>AFHTTPRequestOperationManager</span> <span class='o'>*</span><span class='p'>)</span><span class='n'>operationManager</span>
+    <span class='p'>{</span>
+        <span class='k'>if</span> <span class='p'>(</span><span class='o'>!</span><span class='n'>_operationManager</span><span class='p'>)</span>
+        <span class='p'>{</span>
+            <span class='n'>_operationManager</span> <span class='o'>=</span> <span class='p'>[[</span><span class='n'>AFHTTPRequestOperationManager</span> <span class='n'>alloc</span><span class='p'>]</span> <span class='n'>init</span><span class='p'>];</span>
+            <span class='n'>_operationManager</span><span class='p'>.</span><span class='n'>responseSerializer</span> <span class='o'>=</span> <span class='p'>[</span><span class='n'>AFImageResponseSerializer</span> <span class='n'>serializer</span><span class='p'>];</span>
+        <span class='p'>};</span>
+        
+        <span class='k'>return</span> <span class='n'>_operationManager</span><span class='p'>;</span>
+    <span class='p'>}</span>
+
+    <span class='o'>-</span> <span class='p'>(</span><span class='n'>UITableViewCell</span> <span class='o'>*</span><span class='p'>)</span><span class='n'>tableView</span><span class='o'>:</span><span class='p'>(</span><span class='n'>UITableView</span> <span class='o'>*</span><span class='p'>)</span><span class='n'>tableView</span>
+             <span class='nl'>cellForRowAtIndexPath:</span><span class='p'>(</span><span class='n'>NSIndexPath</span> <span class='o'>*</span><span class='p'>)</span><span class='n'>indexPath</span>
+    <span class='p'>{</span>
+        <span class='n'>UITableViewCell</span> <span class='o'>*</span><span class='n'>cell</span> <span class='o'>=</span> <span class='p'>[</span><span class='n'>tableView</span> <span class='n'>dequeueReusableCellWithIdentifier</span><span class='o'>:</span><span class='s'>@&quot;TableViewCell&quot;</span>
+                                                                <span class='nl'>forIndexPath:</span><span class='n'>indexPath</span><span class='p'>];</span>
+        
+        <span class='n'>cell</span><span class='p'>.</span><span class='n'>imageView</span><span class='p'>.</span><span class='n'>image</span> <span class='o'>=</span> <span class='p'>[</span><span class='n'>UIImage</span> <span class='n'>imageNamed</span><span class='o'>:</span><span class='s'>@&quot;placeholder&quot;</span><span class='p'>];</span>
+      
+        <span class='p'>[</span><span class='n'>self</span><span class='p'>.</span><span class='n'>operationManager</span> <span class='n'>GET</span><span class='o'>:</span><span class='n'>self</span><span class='p'>.</span><span class='n'>imageURLs</span><span class='p'>[</span><span class='n'>indexPath</span><span class='p'>.</span><span class='n'>row</span><span class='p'>]</span>
+                        <span class='nl'>parameters:</span><span class='nb'>nil</span>
+                           <span class='nl'>success:</span><span class='o'>^</span><span class='p'>(</span><span class='n'>AFHTTPRequestOperation</span> <span class='o'>*</span><span class='n'>operation</span><span class='p'>,</span> <span class='kt'>id</span> <span class='n'>responseObject</span><span class='p'>)</span> <span class='p'>{</span>
+            <span class='n'>cell</span><span class='p'>.</span><span class='n'>imageView</span><span class='p'>.</span><span class='n'>image</span> <span class='o'>=</span> <span class='n'>responseObject</span><span class='p'>;</span>
+        <span class='p'>}</span> <span class='n'>failure</span><span class='o'>:^</span><span class='p'>(</span><span class='n'>AFHTTPRequestOperation</span> <span class='o'>*</span><span class='n'>operation</span><span class='p'>,</span> <span class='n'>NSError</span> <span class='o'>*</span><span class='n'>error</span><span class='p'>)</span> <span class='p'>{</span>
+            <span class='n'>NSLog</span><span class='p'>(</span><span class='s'>@&quot;Failed with error %@.&quot;</span><span class='p'>,</span> <span class='n'>error</span><span class='p'>);</span>
+        <span class='p'>}];</span>
+        
+        <span class='k'>return</span> <span class='n'>cell</span><span class='p'>;</span>
+    <span class='p'>}</span>
+</code></pre></div>
+<p>When running this code, it becomes obvious why cancelling requests for offscreen views is not such a bad idea: if the request queue cannot keep up with the speed of scrolling, the images in the reused cells get overwritten multiple times (and if the responses would arrive out of order, we could end up with wrong images in the cells).</p>
+
+<p><img src='/images/2014042702.gif' /></p>
+
+<p>There are two simple approaches to work around this. The first one is to cancel the pending request whenever a cell is reused and a new request is queued:</p>
+<div class='highlight'><pre><code class='objc'>    <span class='o'>-</span> <span class='p'>(</span><span class='n'>UITableViewCell</span> <span class='o'>*</span><span class='p'>)</span><span class='n'>tableView</span><span class='o'>:</span><span class='p'>(</span><span class='n'>UITableView</span> <span class='o'>*</span><span class='p'>)</span><span class='n'>tableView</span>
+             <span class='nl'>cellForRowAtIndexPath:</span><span class='p'>(</span><span class='n'>NSIndexPath</span> <span class='o'>*</span><span class='p'>)</span><span class='n'>indexPath</span>
+    <span class='p'>{</span>
+        <span class='n'>UITableViewCell</span> <span class='o'>*</span><span class='n'>cell</span> <span class='o'>=</span> <span class='p'>[</span><span class='n'>tableView</span> <span class='n'>dequeueReusableCellWithIdentifier</span><span class='o'>:</span><span class='s'>@&quot;TableViewCell&quot;</span>
+                                                                <span class='nl'>forIndexPath:</span><span class='n'>indexPath</span><span class='p'>];</span>
+        
+        <span class='n'>cell</span><span class='p'>.</span><span class='n'>imageView</span><span class='p'>.</span><span class='n'>image</span> <span class='o'>=</span> <span class='p'>[</span><span class='n'>UIImage</span> <span class='n'>imageNamed</span><span class='o'>:</span><span class='s'>@&quot;placeholder&quot;</span><span class='p'>];</span>
+      
+        <span class='p'>[</span><span class='n'>cell</span><span class='p'>.</span><span class='n'>imageView</span><span class='p'>.</span><span class='n'>associatedObject</span> <span class='n'>cancel</span><span class='p'>];</span>
+        
+        <span class='n'>cell</span><span class='p'>.</span><span class='n'>imageView</span><span class='p'>.</span><span class='n'>associatedObject</span> <span class='o'>=</span>
+            <span class='p'>[</span><span class='n'>self</span><span class='p'>.</span><span class='n'>operationManager</span> <span class='n'>GET</span><span class='o'>:</span><span class='n'>self</span><span class='p'>.</span><span class='n'>imageURLs</span><span class='p'>[</span><span class='n'>indexPath</span><span class='p'>.</span><span class='n'>row</span><span class='p'>]</span>
+                            <span class='nl'>parameters:</span><span class='nb'>nil</span>
+                               <span class='nl'>success:</span><span class='o'>^</span><span class='p'>(</span><span class='n'>AFHTTPRequestOperation</span> <span class='o'>*</span><span class='n'>operation</span><span class='p'>,</span> <span class='kt'>id</span> <span class='n'>responseObject</span><span class='p'>)</span> <span class='p'>{</span>
+            <span class='n'>cell</span><span class='p'>.</span><span class='n'>imageView</span><span class='p'>.</span><span class='n'>image</span> <span class='o'>=</span> <span class='n'>responseObject</span><span class='p'>;</span>
+        <span class='p'>}</span> <span class='n'>failure</span><span class='o'>:^</span><span class='p'>(</span><span class='n'>AFHTTPRequestOperation</span> <span class='o'>*</span><span class='n'>operation</span><span class='p'>,</span> <span class='n'>NSError</span> <span class='o'>*</span><span class='n'>error</span><span class='p'>)</span> <span class='p'>{</span>
+            <span class='n'>NSLog</span><span class='p'>(</span><span class='s'>@&quot;Failed with error %@.&quot;</span><span class='p'>,</span> <span class='n'>error</span><span class='p'>);</span>
+        <span class='p'>}];</span>
+        
+        <span class='k'>return</span> <span class='n'>cell</span><span class='p'>;</span>
+    <span class='p'>}</span>
+</code></pre></div>
+<p>The <code>associatedObject</code> property is used in the code above to remember the previously queued operation for each reused cell. It is implemented as a category on <code>NSObject</code> to avoid subclassing in this simplified example:</p>
+<div class='highlight'><pre><code class='objc'>    <span class='err'>#</span><span class='n'>import</span> <span class='o'>&lt;</span><span class='n'>objc</span><span class='o'>/</span><span class='n'>runtime</span><span class='p'>.</span><span class='n'>h</span><span class='o'>&gt;</span>
+
+    <span class='k'>@interface</span> <span class='nc'>NSObject</span> <span class='nl'>(Associating)</span>
+
+    <span class='k'>@property</span> <span class='p'>(</span><span class='n'>nonatomic</span><span class='p'>,</span> <span class='n'>retain</span><span class='p'>)</span> <span class='kt'>id</span> <span class='n'>associatedObject</span><span class='p'>;</span>
+
+    <span class='k'>@end</span>
+
+    <span class='k'>@implementation</span> <span class='nc'>NSObject</span> <span class='nl'>(Associating)</span>
+
+    <span class='o'>-</span> <span class='p'>(</span><span class='kt'>id</span><span class='p'>)</span><span class='n'>associatedObject</span>
+    <span class='p'>{</span>
+        <span class='k'>return</span> <span class='n'>objc_getAssociatedObject</span><span class='p'>(</span><span class='n'>self</span><span class='p'>,</span> <span class='k'>@selector</span><span class='p'>(</span><span class='n'>associatedObject</span><span class='p'>));</span>
+    <span class='p'>}</span>
+
+    <span class='o'>-</span> <span class='p'>(</span><span class='kt'>void</span><span class='p'>)</span><span class='n'>setAssociatedObject</span><span class='o'>:</span><span class='p'>(</span><span class='kt'>id</span><span class='p'>)</span><span class='n'>associatedObject</span>
+    <span class='p'>{</span>
+        <span class='n'>objc_setAssociatedObject</span><span class='p'>(</span><span class='n'>self</span><span class='p'>,</span>
+                                 <span class='k'>@selector</span><span class='p'>(</span><span class='n'>associatedObject</span><span class='p'>),</span>
+                                 <span class='n'>associatedObject</span><span class='p'>,</span>
+                                 <span class='n'>OBJC_ASSOCIATION_RETAIN_NONATOMIC</span><span class='p'>);</span>
+    <span class='p'>}</span>
+
+    <span class='k'>@end</span>
+</code></pre></div>
+<p>Now the result looks a lot better, but the downside is that the images for the cells you quickly scroll past will only get loaded when you scroll back up, because their initial fetch request has been cancelled:</p>
+
+<p><img src='/images/2014042703.gif' /></p>
+
+<p>An alternative approach is to let each queued operation finish, but associate URLs with reused cells, and only assign the fetched image if it corresponds to the last loaded URL for that cell:</p>
+<div class='highlight'><pre><code class='objc'>    <span class='o'>-</span> <span class='p'>(</span><span class='n'>UITableViewCell</span> <span class='o'>*</span><span class='p'>)</span><span class='n'>tableView</span><span class='o'>:</span><span class='p'>(</span><span class='n'>UITableView</span> <span class='o'>*</span><span class='p'>)</span><span class='n'>tableView</span>
+             <span class='nl'>cellForRowAtIndexPath:</span><span class='p'>(</span><span class='n'>NSIndexPath</span> <span class='o'>*</span><span class='p'>)</span><span class='n'>indexPath</span>
+    <span class='p'>{</span>
+        <span class='n'>UITableViewCell</span> <span class='o'>*</span><span class='n'>cell</span> <span class='o'>=</span> <span class='p'>[</span><span class='n'>tableView</span> <span class='n'>dequeueReusableCellWithIdentifier</span><span class='o'>:</span><span class='s'>@&quot;TableViewCell&quot;</span>
+                                                                <span class='nl'>forIndexPath:</span><span class='n'>indexPath</span><span class='p'>];</span>
+        
+        <span class='n'>cell</span><span class='p'>.</span><span class='n'>imageView</span><span class='p'>.</span><span class='n'>image</span> <span class='o'>=</span> <span class='p'>[</span><span class='n'>UIImage</span> <span class='n'>imageNamed</span><span class='o'>:</span><span class='s'>@&quot;placeholder&quot;</span><span class='p'>];</span>
+      
+        <span class='n'>NSString</span> <span class='o'>*</span><span class='n'>url</span> <span class='o'>=</span> <span class='n'>self</span><span class='p'>.</span><span class='n'>imageURLs</span><span class='p'>[</span><span class='n'>indexPath</span><span class='p'>.</span><span class='n'>row</span><span class='p'>];</span>
+        
+        <span class='n'>cell</span><span class='p'>.</span><span class='n'>imageView</span><span class='p'>.</span><span class='n'>associatedObject</span> <span class='o'>=</span> <span class='n'>url</span><span class='p'>;</span>
+        
+        <span class='p'>[</span><span class='n'>self</span><span class='p'>.</span><span class='n'>operationManager</span> <span class='n'>GET</span><span class='o'>:</span><span class='n'>url</span>
+                        <span class='nl'>parameters:</span><span class='nb'>nil</span>
+                           <span class='nl'>success:</span><span class='o'>^</span><span class='p'>(</span><span class='n'>AFHTTPRequestOperation</span> <span class='o'>*</span><span class='n'>operation</span><span class='p'>,</span> <span class='kt'>id</span> <span class='n'>responseObject</span><span class='p'>)</span> <span class='p'>{</span>
+            <span class='k'>if</span> <span class='p'>([</span><span class='n'>cell</span><span class='p'>.</span><span class='n'>imageView</span><span class='p'>.</span><span class='n'>associatedObject</span> <span class='n'>isEqualToString</span><span class='o'>:</span><span class='n'>url</span><span class='p'>])</span>
+            <span class='p'>{</span>
+                <span class='n'>cell</span><span class='p'>.</span><span class='n'>imageView</span><span class='p'>.</span><span class='n'>image</span> <span class='o'>=</span> <span class='n'>responseObject</span><span class='p'>;</span>
+            <span class='p'>}</span>
+        <span class='p'>}</span> <span class='n'>failure</span><span class='o'>:^</span><span class='p'>(</span><span class='n'>AFHTTPRequestOperation</span> <span class='o'>*</span><span class='n'>operation</span><span class='p'>,</span> <span class='n'>NSError</span> <span class='o'>*</span><span class='n'>error</span><span class='p'>)</span> <span class='p'>{</span>
+            <span class='n'>NSLog</span><span class='p'>(</span><span class='s'>@&quot;Failed with error %@.&quot;</span><span class='p'>,</span> <span class='n'>error</span><span class='p'>);</span>
+        <span class='p'>}];</span>
+        
+        <span class='k'>return</span> <span class='n'>cell</span><span class='p'>;</span>
+    <span class='p'>}</span>
+</code></pre></div>
+<p>Now the images for the cells you scroll past will be cached too, with the downside that loading the images for the bottom cells will be noticeably slower:</p>
+
+<p><img src='/images/2014042704.gif' /></p>
+
+<p>Of course you can implemented more advanced strategies, e.g. pause rather than cancel requests and resume them when higher priority requests have finished. The main thing to take away is that, when you hit a wall with a convenient high-level API, you can always drop down to a lower level API and implement your own logic on top of it.</p>
+            
+<div class="social">
+    <div>
+        <a href="https://twitter.com/share" class="twitter-share-button"  data-text="Asynchronous image loading in fast scrolling table cells" data-related="hverlind">Tweet</a>
+    </div>
+    
+    
+    
+    
+    
+</div>
+
+        </section>
+
+        <footer>
+            <address>
+               <img src="/images/avatar.png">
+                <p>Written by <strong><a rel="author" href="https://twitter.com/hverlind" title="" target="_blank">Hannes Verlinde</a></strong><br>
+                <span class="muted">iOS Developer at In the Pocket</span>
+                </p>
+            </address>
+
+        </footer>
+
+        
+        <section>
+            <div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'cocoanutsiosblog'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+        </section>
+        
+    </div>
+</article>
+
+
+<footer class="site-footer">
+    <div class="container">
+        &copy; 2014 <a href="https://twitter.com/hverlind" title="Follow on Twitter" target="_blank">Hannes Verlinde</a> &middot; All rights reserved
+        
+        <nav class="social">
+            <a href="https://twitter.com/hverlind" title="Follow on Twitter" target="_blank"><i class="icon icon-twitter black"></i></a>
+            <a href="/feed" title="Subscribe to RSS feed" target="_blank"><i class="icon icon-rss black"></i></a>
+        </nav>
+        <p>Building your next app at <a href="http://inthepocket.mobi">Europe's finest mobile agency</a></p>
+    </div>
+</footer>
+
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script src="/assets/main.js"></script>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+
+
+
+  <!--google analytics tracking code here-->
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+     m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+     })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+     
+     ga('create', 'UA-49046887-1', 'cocoanuts.mobi');
+     ga('send', 'pageview');
+     
+</script>
+
+
+
+</body>
+</html>

@@ -6,9 +6,200 @@
     <atom:link href="http://cocoanuts.mobi/feed.xml" rel="self" type="application/rss+xml" />
     <description></description>
     <language>en-us</language>
-    <pubDate>Thu, 03 Apr 2014 18:43:35 +0000</pubDate>
-    <lastBuildDate>Thu, 03 Apr 2014 18:43:35 +0000</lastBuildDate>
+    <pubDate>Sun, 27 Apr 2014 20:56:00 +0000</pubDate>
+    <lastBuildDate>Sun, 27 Apr 2014 20:56:00 +0000</lastBuildDate>
 
+    
+    
+    <item>
+      <title>Asynchronous image loading in fast scrolling table cells</title>
+      <link>http://cocoanuts.mobi/2014/04/27/fastscroll/</link>
+      <pubDate>Sun, 27 Apr 2014 00:00:00 +0000</pubDate>
+      <author></author>
+      <guid>http://cocoanuts.mobi/2014/04/27/fastscroll</guid>
+      <description>&lt;p&gt;AFNetworking’s UIImageView category must be one of its most popular features. The functionality it offers is so commonly needed, and the implementation details are hidden in such a way that you would almost forget that a third party network library is being used. For instance, consider the following simple example where a batch of random images is loaded in a plain table view.&lt;/p&gt;
+&lt;div class=&#39;highlight&#39;&gt;&lt;pre&gt;&lt;code class=&#39;objc&#39;&gt;    &lt;span class=&#39;k&#39;&gt;@implementation&lt;/span&gt; &lt;span class=&#39;nc&#39;&gt;TableViewController&lt;/span&gt;
+
+    &lt;span class=&#39;o&#39;&gt;-&lt;/span&gt; &lt;span class=&#39;p&#39;&gt;(&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;NSArray&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;*&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;)&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;imageURLs&lt;/span&gt;
+    &lt;span class=&#39;p&#39;&gt;{&lt;/span&gt;
+        &lt;span class=&#39;k&#39;&gt;if&lt;/span&gt; &lt;span class=&#39;p&#39;&gt;(&lt;/span&gt;&lt;span class=&#39;o&#39;&gt;!&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;_imageURLs&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;)&lt;/span&gt;
+        &lt;span class=&#39;p&#39;&gt;{&lt;/span&gt;
+            &lt;span class=&#39;n&#39;&gt;NSMutableArray&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;*&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;imageURLs&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;=&lt;/span&gt; &lt;span class=&#39;p&#39;&gt;[&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;NSMutableArray&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;array&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;];&lt;/span&gt;
+            
+            &lt;span class=&#39;k&#39;&gt;for&lt;/span&gt; &lt;span class=&#39;p&#39;&gt;(&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;NSInteger&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;index&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;=&lt;/span&gt; &lt;span class=&#39;mi&#39;&gt;0&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;;&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;index&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&#39;mi&#39;&gt;100&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;;&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;++&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;index&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;)&lt;/span&gt;
+            &lt;span class=&#39;p&#39;&gt;{&lt;/span&gt;
+                &lt;span class=&#39;p&#39;&gt;[&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;imageURLs&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;addObject&lt;/span&gt;&lt;span class=&#39;o&#39;&gt;:&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;[&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;NSString&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;stringWithFormat&lt;/span&gt;&lt;span class=&#39;o&#39;&gt;:&lt;/span&gt;
+                                      &lt;span class=&#39;s&#39;&gt;@&amp;quot;http://dummyimage.com/88/%06X/%06X&amp;amp;text=%d&amp;quot;&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;,&lt;/span&gt;
+                                      &lt;span class=&#39;n&#39;&gt;arc4random&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;()&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;%&lt;/span&gt; &lt;span class=&#39;mh&#39;&gt;0xFFFFFF&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;,&lt;/span&gt;
+                                      &lt;span class=&#39;n&#39;&gt;arc4random&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;()&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;%&lt;/span&gt; &lt;span class=&#39;mh&#39;&gt;0xFFFFFF&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;,&lt;/span&gt;
+                                      &lt;span class=&#39;n&#39;&gt;index&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;+&lt;/span&gt; &lt;span class=&#39;mi&#39;&gt;1&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;]];&lt;/span&gt;
+            &lt;span class=&#39;p&#39;&gt;}&lt;/span&gt;
+            
+            &lt;span class=&#39;n&#39;&gt;_imageURLs&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;=&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;imageURLs&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;;&lt;/span&gt;
+        &lt;span class=&#39;p&#39;&gt;}&lt;/span&gt;
+        
+        &lt;span class=&#39;k&#39;&gt;return&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;_imageURLs&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;;&lt;/span&gt;
+    &lt;span class=&#39;p&#39;&gt;}&lt;/span&gt;
+
+    &lt;span class=&#39;o&#39;&gt;-&lt;/span&gt; &lt;span class=&#39;p&#39;&gt;(&lt;/span&gt;&lt;span class=&#39;kt&#39;&gt;void&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;)&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;viewDidLoad&lt;/span&gt;
+    &lt;span class=&#39;p&#39;&gt;{&lt;/span&gt;
+        &lt;span class=&#39;p&#39;&gt;[&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;super&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;viewDidLoad&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;];&lt;/span&gt;
+        
+        &lt;span class=&#39;p&#39;&gt;[&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;self&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;.&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;tableView&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;registerClass&lt;/span&gt;&lt;span class=&#39;o&#39;&gt;:&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;[&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;UITableViewCell&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;class&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;]&lt;/span&gt;
+               &lt;span class=&#39;nl&#39;&gt;forCellReuseIdentifier:&lt;/span&gt;&lt;span class=&#39;s&#39;&gt;@&amp;quot;TableViewCell&amp;quot;&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;];&lt;/span&gt;
+    &lt;span class=&#39;p&#39;&gt;}&lt;/span&gt;
+
+    &lt;span class=&#39;o&#39;&gt;-&lt;/span&gt; &lt;span class=&#39;p&#39;&gt;(&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;NSInteger&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;)&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;numberOfSectionsInTableView&lt;/span&gt;&lt;span class=&#39;o&#39;&gt;:&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;(&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;UITableView&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;*&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;)&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;tableView&lt;/span&gt;
+    &lt;span class=&#39;p&#39;&gt;{&lt;/span&gt;
+        &lt;span class=&#39;k&#39;&gt;return&lt;/span&gt; &lt;span class=&#39;mi&#39;&gt;1&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;;&lt;/span&gt;
+    &lt;span class=&#39;p&#39;&gt;}&lt;/span&gt;
+
+    &lt;span class=&#39;o&#39;&gt;-&lt;/span&gt; &lt;span class=&#39;p&#39;&gt;(&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;NSInteger&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;)&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;tableView&lt;/span&gt;&lt;span class=&#39;o&#39;&gt;:&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;(&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;UITableView&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;*&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;)&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;tableView&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;numberOfRowsInSection&lt;/span&gt;&lt;span class=&#39;o&#39;&gt;:&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;(&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;NSInteger&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;)&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;section&lt;/span&gt;
+    &lt;span class=&#39;p&#39;&gt;{&lt;/span&gt;
+        &lt;span class=&#39;k&#39;&gt;return&lt;/span&gt; &lt;span class=&#39;p&#39;&gt;[&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;self&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;.&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;imageURLs&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;count&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;];&lt;/span&gt;
+    &lt;span class=&#39;p&#39;&gt;}&lt;/span&gt;
+
+    &lt;span class=&#39;o&#39;&gt;-&lt;/span&gt; &lt;span class=&#39;p&#39;&gt;(&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;UITableViewCell&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;*&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;)&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;tableView&lt;/span&gt;&lt;span class=&#39;o&#39;&gt;:&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;(&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;UITableView&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;*&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;)&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;tableView&lt;/span&gt;
+             &lt;span class=&#39;nl&#39;&gt;cellForRowAtIndexPath:&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;(&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;NSIndexPath&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;*&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;)&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;indexPath&lt;/span&gt;
+    &lt;span class=&#39;p&#39;&gt;{&lt;/span&gt;
+        &lt;span class=&#39;n&#39;&gt;UITableViewCell&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;*&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;cell&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;=&lt;/span&gt; &lt;span class=&#39;p&#39;&gt;[&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;tableView&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;dequeueReusableCellWithIdentifier&lt;/span&gt;&lt;span class=&#39;o&#39;&gt;:&lt;/span&gt;&lt;span class=&#39;s&#39;&gt;@&amp;quot;TableViewCell&amp;quot;&lt;/span&gt;
+                                                                &lt;span class=&#39;nl&#39;&gt;forIndexPath:&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;indexPath&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;];&lt;/span&gt;
+        
+        &lt;span class=&#39;n&#39;&gt;cell&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;.&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;imageView&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;.&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;image&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;=&lt;/span&gt; &lt;span class=&#39;p&#39;&gt;[&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;UIImage&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;imageNamed&lt;/span&gt;&lt;span class=&#39;o&#39;&gt;:&lt;/span&gt;&lt;span class=&#39;s&#39;&gt;@&amp;quot;placeholder&amp;quot;&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;];&lt;/span&gt;
+      
+        &lt;span class=&#39;p&#39;&gt;[&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;cell&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;.&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;imageView&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;setImageWithURL&lt;/span&gt;&lt;span class=&#39;o&#39;&gt;:&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;[&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;NSURL&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;URLWithString&lt;/span&gt;&lt;span class=&#39;o&#39;&gt;:&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;self&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;.&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;imageURLs&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;[&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;indexPath&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;.&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;row&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;]]];&lt;/span&gt;
+        
+        &lt;span class=&#39;k&#39;&gt;return&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;cell&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;;&lt;/span&gt;
+    &lt;span class=&#39;p&#39;&gt;}&lt;/span&gt;
+
+    &lt;span class=&#39;k&#39;&gt;@end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;One downside of using this convenient category is that it can lead to undesired artifacts when scrolling fast in a table view. In the UIImageView+AFNetworking implementation, certain decisions are made to optimize for loading images currently on screen, which is done by cancelling previous requests for offscreen views. This behavior can interfere with cell reuse behavior, which may result in images not being loaded correctly, as shown below:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#39;/images/2014042701.gif&#39; /&gt;&lt;/p&gt;
+
+&lt;p&gt;To figure out what can be done about these unwanted side-effects, we switch to a lower level implementation using an &lt;code&gt;AFHTTPRequestOperationManager&lt;/code&gt; and its &lt;code&gt;GET:parameters:success:failure&lt;/code&gt; method.&lt;/p&gt;
+&lt;div class=&#39;highlight&#39;&gt;&lt;pre&gt;&lt;code class=&#39;objc&#39;&gt;    &lt;span class=&#39;o&#39;&gt;-&lt;/span&gt; &lt;span class=&#39;p&#39;&gt;(&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;AFHTTPRequestOperationManager&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;*&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;)&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;operationManager&lt;/span&gt;
+    &lt;span class=&#39;p&#39;&gt;{&lt;/span&gt;
+        &lt;span class=&#39;k&#39;&gt;if&lt;/span&gt; &lt;span class=&#39;p&#39;&gt;(&lt;/span&gt;&lt;span class=&#39;o&#39;&gt;!&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;_operationManager&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;)&lt;/span&gt;
+        &lt;span class=&#39;p&#39;&gt;{&lt;/span&gt;
+            &lt;span class=&#39;n&#39;&gt;_operationManager&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;=&lt;/span&gt; &lt;span class=&#39;p&#39;&gt;[[&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;AFHTTPRequestOperationManager&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;alloc&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;]&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;init&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;];&lt;/span&gt;
+            &lt;span class=&#39;n&#39;&gt;_operationManager&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;.&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;responseSerializer&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;=&lt;/span&gt; &lt;span class=&#39;p&#39;&gt;[&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;AFImageResponseSerializer&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;serializer&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;];&lt;/span&gt;
+        &lt;span class=&#39;p&#39;&gt;};&lt;/span&gt;
+        
+        &lt;span class=&#39;k&#39;&gt;return&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;_operationManager&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;;&lt;/span&gt;
+    &lt;span class=&#39;p&#39;&gt;}&lt;/span&gt;
+
+    &lt;span class=&#39;o&#39;&gt;-&lt;/span&gt; &lt;span class=&#39;p&#39;&gt;(&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;UITableViewCell&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;*&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;)&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;tableView&lt;/span&gt;&lt;span class=&#39;o&#39;&gt;:&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;(&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;UITableView&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;*&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;)&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;tableView&lt;/span&gt;
+             &lt;span class=&#39;nl&#39;&gt;cellForRowAtIndexPath:&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;(&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;NSIndexPath&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;*&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;)&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;indexPath&lt;/span&gt;
+    &lt;span class=&#39;p&#39;&gt;{&lt;/span&gt;
+        &lt;span class=&#39;n&#39;&gt;UITableViewCell&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;*&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;cell&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;=&lt;/span&gt; &lt;span class=&#39;p&#39;&gt;[&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;tableView&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;dequeueReusableCellWithIdentifier&lt;/span&gt;&lt;span class=&#39;o&#39;&gt;:&lt;/span&gt;&lt;span class=&#39;s&#39;&gt;@&amp;quot;TableViewCell&amp;quot;&lt;/span&gt;
+                                                                &lt;span class=&#39;nl&#39;&gt;forIndexPath:&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;indexPath&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;];&lt;/span&gt;
+        
+        &lt;span class=&#39;n&#39;&gt;cell&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;.&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;imageView&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;.&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;image&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;=&lt;/span&gt; &lt;span class=&#39;p&#39;&gt;[&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;UIImage&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;imageNamed&lt;/span&gt;&lt;span class=&#39;o&#39;&gt;:&lt;/span&gt;&lt;span class=&#39;s&#39;&gt;@&amp;quot;placeholder&amp;quot;&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;];&lt;/span&gt;
+      
+        &lt;span class=&#39;p&#39;&gt;[&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;self&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;.&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;operationManager&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;GET&lt;/span&gt;&lt;span class=&#39;o&#39;&gt;:&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;self&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;.&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;imageURLs&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;[&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;indexPath&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;.&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;row&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;]&lt;/span&gt;
+                        &lt;span class=&#39;nl&#39;&gt;parameters:&lt;/span&gt;&lt;span class=&#39;nb&#39;&gt;nil&lt;/span&gt;
+                           &lt;span class=&#39;nl&#39;&gt;success:&lt;/span&gt;&lt;span class=&#39;o&#39;&gt;^&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;(&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;AFHTTPRequestOperation&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;*&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;operation&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;,&lt;/span&gt; &lt;span class=&#39;kt&#39;&gt;id&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;responseObject&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;)&lt;/span&gt; &lt;span class=&#39;p&#39;&gt;{&lt;/span&gt;
+            &lt;span class=&#39;n&#39;&gt;cell&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;.&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;imageView&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;.&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;image&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;=&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;responseObject&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;;&lt;/span&gt;
+        &lt;span class=&#39;p&#39;&gt;}&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;failure&lt;/span&gt;&lt;span class=&#39;o&#39;&gt;:^&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;(&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;AFHTTPRequestOperation&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;*&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;operation&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;,&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;NSError&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;*&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;error&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;)&lt;/span&gt; &lt;span class=&#39;p&#39;&gt;{&lt;/span&gt;
+            &lt;span class=&#39;n&#39;&gt;NSLog&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;(&lt;/span&gt;&lt;span class=&#39;s&#39;&gt;@&amp;quot;Failed with error %@.&amp;quot;&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;,&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;error&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;);&lt;/span&gt;
+        &lt;span class=&#39;p&#39;&gt;}];&lt;/span&gt;
+        
+        &lt;span class=&#39;k&#39;&gt;return&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;cell&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;;&lt;/span&gt;
+    &lt;span class=&#39;p&#39;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;When running this code, it becomes obvious why cancelling requests for offscreen views is not such a bad idea: if the request queue cannot keep up with the speed of scrolling, the images in the reused cells get overwritten multiple times (and if the responses would arrive out of order, we could end up with wrong images in the cells).&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#39;/images/2014042702.gif&#39; /&gt;&lt;/p&gt;
+
+&lt;p&gt;There are two simple approaches to work around this. The first one is to cancel the pending request whenever a cell is reused and a new request is queued:&lt;/p&gt;
+&lt;div class=&#39;highlight&#39;&gt;&lt;pre&gt;&lt;code class=&#39;objc&#39;&gt;    &lt;span class=&#39;o&#39;&gt;-&lt;/span&gt; &lt;span class=&#39;p&#39;&gt;(&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;UITableViewCell&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;*&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;)&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;tableView&lt;/span&gt;&lt;span class=&#39;o&#39;&gt;:&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;(&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;UITableView&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;*&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;)&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;tableView&lt;/span&gt;
+             &lt;span class=&#39;nl&#39;&gt;cellForRowAtIndexPath:&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;(&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;NSIndexPath&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;*&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;)&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;indexPath&lt;/span&gt;
+    &lt;span class=&#39;p&#39;&gt;{&lt;/span&gt;
+        &lt;span class=&#39;n&#39;&gt;UITableViewCell&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;*&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;cell&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;=&lt;/span&gt; &lt;span class=&#39;p&#39;&gt;[&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;tableView&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;dequeueReusableCellWithIdentifier&lt;/span&gt;&lt;span class=&#39;o&#39;&gt;:&lt;/span&gt;&lt;span class=&#39;s&#39;&gt;@&amp;quot;TableViewCell&amp;quot;&lt;/span&gt;
+                                                                &lt;span class=&#39;nl&#39;&gt;forIndexPath:&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;indexPath&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;];&lt;/span&gt;
+        
+        &lt;span class=&#39;n&#39;&gt;cell&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;.&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;imageView&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;.&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;image&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;=&lt;/span&gt; &lt;span class=&#39;p&#39;&gt;[&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;UIImage&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;imageNamed&lt;/span&gt;&lt;span class=&#39;o&#39;&gt;:&lt;/span&gt;&lt;span class=&#39;s&#39;&gt;@&amp;quot;placeholder&amp;quot;&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;];&lt;/span&gt;
+      
+        &lt;span class=&#39;p&#39;&gt;[&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;cell&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;.&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;imageView&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;.&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;associatedObject&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;cancel&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;];&lt;/span&gt;
+        
+        &lt;span class=&#39;n&#39;&gt;cell&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;.&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;imageView&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;.&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;associatedObject&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;=&lt;/span&gt;
+            &lt;span class=&#39;p&#39;&gt;[&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;self&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;.&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;operationManager&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;GET&lt;/span&gt;&lt;span class=&#39;o&#39;&gt;:&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;self&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;.&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;imageURLs&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;[&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;indexPath&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;.&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;row&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;]&lt;/span&gt;
+                            &lt;span class=&#39;nl&#39;&gt;parameters:&lt;/span&gt;&lt;span class=&#39;nb&#39;&gt;nil&lt;/span&gt;
+                               &lt;span class=&#39;nl&#39;&gt;success:&lt;/span&gt;&lt;span class=&#39;o&#39;&gt;^&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;(&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;AFHTTPRequestOperation&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;*&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;operation&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;,&lt;/span&gt; &lt;span class=&#39;kt&#39;&gt;id&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;responseObject&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;)&lt;/span&gt; &lt;span class=&#39;p&#39;&gt;{&lt;/span&gt;
+            &lt;span class=&#39;n&#39;&gt;cell&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;.&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;imageView&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;.&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;image&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;=&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;responseObject&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;;&lt;/span&gt;
+        &lt;span class=&#39;p&#39;&gt;}&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;failure&lt;/span&gt;&lt;span class=&#39;o&#39;&gt;:^&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;(&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;AFHTTPRequestOperation&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;*&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;operation&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;,&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;NSError&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;*&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;error&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;)&lt;/span&gt; &lt;span class=&#39;p&#39;&gt;{&lt;/span&gt;
+            &lt;span class=&#39;n&#39;&gt;NSLog&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;(&lt;/span&gt;&lt;span class=&#39;s&#39;&gt;@&amp;quot;Failed with error %@.&amp;quot;&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;,&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;error&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;);&lt;/span&gt;
+        &lt;span class=&#39;p&#39;&gt;}];&lt;/span&gt;
+        
+        &lt;span class=&#39;k&#39;&gt;return&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;cell&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;;&lt;/span&gt;
+    &lt;span class=&#39;p&#39;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;The &lt;code&gt;associatedObject&lt;/code&gt; property is used in the code above to remember the previously queued operation for each reused cell. It is implemented as a category on &lt;code&gt;NSObject&lt;/code&gt; to avoid subclassing in this simplified example:&lt;/p&gt;
+&lt;div class=&#39;highlight&#39;&gt;&lt;pre&gt;&lt;code class=&#39;objc&#39;&gt;    &lt;span class=&#39;err&#39;&gt;#&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;import&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;objc&lt;/span&gt;&lt;span class=&#39;o&#39;&gt;/&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;runtime&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;.&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;h&lt;/span&gt;&lt;span class=&#39;o&#39;&gt;&amp;gt;&lt;/span&gt;
+
+    &lt;span class=&#39;k&#39;&gt;@interface&lt;/span&gt; &lt;span class=&#39;nc&#39;&gt;NSObject&lt;/span&gt; &lt;span class=&#39;nl&#39;&gt;(Associating)&lt;/span&gt;
+
+    &lt;span class=&#39;k&#39;&gt;@property&lt;/span&gt; &lt;span class=&#39;p&#39;&gt;(&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;nonatomic&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;,&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;retain&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;)&lt;/span&gt; &lt;span class=&#39;kt&#39;&gt;id&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;associatedObject&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;;&lt;/span&gt;
+
+    &lt;span class=&#39;k&#39;&gt;@end&lt;/span&gt;
+
+    &lt;span class=&#39;k&#39;&gt;@implementation&lt;/span&gt; &lt;span class=&#39;nc&#39;&gt;NSObject&lt;/span&gt; &lt;span class=&#39;nl&#39;&gt;(Associating)&lt;/span&gt;
+
+    &lt;span class=&#39;o&#39;&gt;-&lt;/span&gt; &lt;span class=&#39;p&#39;&gt;(&lt;/span&gt;&lt;span class=&#39;kt&#39;&gt;id&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;)&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;associatedObject&lt;/span&gt;
+    &lt;span class=&#39;p&#39;&gt;{&lt;/span&gt;
+        &lt;span class=&#39;k&#39;&gt;return&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;objc_getAssociatedObject&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;(&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;self&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;,&lt;/span&gt; &lt;span class=&#39;k&#39;&gt;@selector&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;(&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;associatedObject&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;));&lt;/span&gt;
+    &lt;span class=&#39;p&#39;&gt;}&lt;/span&gt;
+
+    &lt;span class=&#39;o&#39;&gt;-&lt;/span&gt; &lt;span class=&#39;p&#39;&gt;(&lt;/span&gt;&lt;span class=&#39;kt&#39;&gt;void&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;)&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;setAssociatedObject&lt;/span&gt;&lt;span class=&#39;o&#39;&gt;:&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;(&lt;/span&gt;&lt;span class=&#39;kt&#39;&gt;id&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;)&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;associatedObject&lt;/span&gt;
+    &lt;span class=&#39;p&#39;&gt;{&lt;/span&gt;
+        &lt;span class=&#39;n&#39;&gt;objc_setAssociatedObject&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;(&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;self&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;,&lt;/span&gt;
+                                 &lt;span class=&#39;k&#39;&gt;@selector&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;(&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;associatedObject&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;),&lt;/span&gt;
+                                 &lt;span class=&#39;n&#39;&gt;associatedObject&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;,&lt;/span&gt;
+                                 &lt;span class=&#39;n&#39;&gt;OBJC_ASSOCIATION_RETAIN_NONATOMIC&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;);&lt;/span&gt;
+    &lt;span class=&#39;p&#39;&gt;}&lt;/span&gt;
+
+    &lt;span class=&#39;k&#39;&gt;@end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Now the result looks a lot better, but the downside is that the images for the cells you quickly scroll past will only get loaded when you scroll back up, because their initial fetch request has been cancelled:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#39;/images/2014042703.gif&#39; /&gt;&lt;/p&gt;
+
+&lt;p&gt;An alternative approach is to let each queued operation finish, but associate URLs with reused cells, and only assign the fetched image if it corresponds to the last loaded URL for that cell:&lt;/p&gt;
+&lt;div class=&#39;highlight&#39;&gt;&lt;pre&gt;&lt;code class=&#39;objc&#39;&gt;    &lt;span class=&#39;o&#39;&gt;-&lt;/span&gt; &lt;span class=&#39;p&#39;&gt;(&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;UITableViewCell&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;*&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;)&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;tableView&lt;/span&gt;&lt;span class=&#39;o&#39;&gt;:&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;(&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;UITableView&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;*&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;)&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;tableView&lt;/span&gt;
+             &lt;span class=&#39;nl&#39;&gt;cellForRowAtIndexPath:&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;(&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;NSIndexPath&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;*&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;)&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;indexPath&lt;/span&gt;
+    &lt;span class=&#39;p&#39;&gt;{&lt;/span&gt;
+        &lt;span class=&#39;n&#39;&gt;UITableViewCell&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;*&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;cell&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;=&lt;/span&gt; &lt;span class=&#39;p&#39;&gt;[&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;tableView&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;dequeueReusableCellWithIdentifier&lt;/span&gt;&lt;span class=&#39;o&#39;&gt;:&lt;/span&gt;&lt;span class=&#39;s&#39;&gt;@&amp;quot;TableViewCell&amp;quot;&lt;/span&gt;
+                                                                &lt;span class=&#39;nl&#39;&gt;forIndexPath:&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;indexPath&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;];&lt;/span&gt;
+        
+        &lt;span class=&#39;n&#39;&gt;cell&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;.&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;imageView&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;.&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;image&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;=&lt;/span&gt; &lt;span class=&#39;p&#39;&gt;[&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;UIImage&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;imageNamed&lt;/span&gt;&lt;span class=&#39;o&#39;&gt;:&lt;/span&gt;&lt;span class=&#39;s&#39;&gt;@&amp;quot;placeholder&amp;quot;&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;];&lt;/span&gt;
+      
+        &lt;span class=&#39;n&#39;&gt;NSString&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;*&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;url&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;=&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;self&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;.&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;imageURLs&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;[&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;indexPath&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;.&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;row&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;];&lt;/span&gt;
+        
+        &lt;span class=&#39;n&#39;&gt;cell&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;.&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;imageView&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;.&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;associatedObject&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;=&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;url&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;;&lt;/span&gt;
+        
+        &lt;span class=&#39;p&#39;&gt;[&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;self&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;.&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;operationManager&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;GET&lt;/span&gt;&lt;span class=&#39;o&#39;&gt;:&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;url&lt;/span&gt;
+                        &lt;span class=&#39;nl&#39;&gt;parameters:&lt;/span&gt;&lt;span class=&#39;nb&#39;&gt;nil&lt;/span&gt;
+                           &lt;span class=&#39;nl&#39;&gt;success:&lt;/span&gt;&lt;span class=&#39;o&#39;&gt;^&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;(&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;AFHTTPRequestOperation&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;*&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;operation&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;,&lt;/span&gt; &lt;span class=&#39;kt&#39;&gt;id&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;responseObject&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;)&lt;/span&gt; &lt;span class=&#39;p&#39;&gt;{&lt;/span&gt;
+            &lt;span class=&#39;k&#39;&gt;if&lt;/span&gt; &lt;span class=&#39;p&#39;&gt;([&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;cell&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;.&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;imageView&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;.&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;associatedObject&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;isEqualToString&lt;/span&gt;&lt;span class=&#39;o&#39;&gt;:&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;url&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;])&lt;/span&gt;
+            &lt;span class=&#39;p&#39;&gt;{&lt;/span&gt;
+                &lt;span class=&#39;n&#39;&gt;cell&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;.&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;imageView&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;.&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;image&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;=&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;responseObject&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;;&lt;/span&gt;
+            &lt;span class=&#39;p&#39;&gt;}&lt;/span&gt;
+        &lt;span class=&#39;p&#39;&gt;}&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;failure&lt;/span&gt;&lt;span class=&#39;o&#39;&gt;:^&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;(&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;AFHTTPRequestOperation&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;*&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;operation&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;,&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;NSError&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;*&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;error&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;)&lt;/span&gt; &lt;span class=&#39;p&#39;&gt;{&lt;/span&gt;
+            &lt;span class=&#39;n&#39;&gt;NSLog&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;(&lt;/span&gt;&lt;span class=&#39;s&#39;&gt;@&amp;quot;Failed with error %@.&amp;quot;&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;,&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;error&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;);&lt;/span&gt;
+        &lt;span class=&#39;p&#39;&gt;}];&lt;/span&gt;
+        
+        &lt;span class=&#39;k&#39;&gt;return&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;cell&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;;&lt;/span&gt;
+    &lt;span class=&#39;p&#39;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Now the images for the cells you scroll past will be cached too, with the downside that loading the images for the bottom cells will be noticeably slower:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#39;/images/2014042704.gif&#39; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Of course you can implemented more advanced strategies, e.g. pause rather than cancel requests and resume them when higher priority requests have finished. The main thing to take away is that, when you hit a wall with a convenient high-level API, you can always drop down to a lower level API and implement your own logic on top of it.&lt;/p&gt;</description>
+    </item>
+    
     
     
     <item>
