@@ -6,9 +6,84 @@
     <atom:link href="http://cocoanuts.mobi/feed.xml" rel="self" type="application/rss+xml" />
     <description></description>
     <language>en-us</language>
-    <pubDate>Sun, 27 Apr 2014 20:56:00 +0000</pubDate>
-    <lastBuildDate>Sun, 27 Apr 2014 20:56:00 +0000</lastBuildDate>
+    <pubDate>Thu, 15 May 2014 17:52:07 +0000</pubDate>
+    <lastBuildDate>Thu, 15 May 2014 17:52:07 +0000</lastBuildDate>
 
+    
+    
+    <item>
+      <title>A more generic builder pattern for Objective-C</title>
+      <link>http://cocoanuts.mobi/2014/05/15/builder/</link>
+      <pubDate>Thu, 15 May 2014 00:00:00 +0000</pubDate>
+      <author></author>
+      <guid>http://cocoanuts.mobi/2014/05/15/builder</guid>
+      <description>&lt;p&gt;A few weeks ago I came across this &lt;a href=&quot;http://www.annema.me/blog/post/2014/4/4/the-builder-pattern-in-objective-c&quot;&gt;blog post&lt;/a&gt; about a builder pattern for Objective-C. It was one of our interns who pointed me to the article and asked if I considered this to be a good idea. Here’s what it looks like:&lt;/p&gt;
+&lt;div class=&#39;highlight&#39;&gt;&lt;pre&gt;&lt;code class=&#39;objc&#39;&gt;    &lt;span class=&#39;n&#39;&gt;Pizza&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;*&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;pizza&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;=&lt;/span&gt; &lt;span class=&#39;p&#39;&gt;[&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;Pizza&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;pizzaWithBlock&lt;/span&gt;&lt;span class=&#39;o&#39;&gt;:^&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;(&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;PizzaBuilder&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;*&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;builder&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;])&lt;/span&gt; &lt;span class=&#39;p&#39;&gt;{&lt;/span&gt;
+        &lt;span class=&#39;n&#39;&gt;builder&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;.&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;size&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;=&lt;/span&gt; &lt;span class=&#39;mi&#39;&gt;12&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;;&lt;/span&gt;
+        &lt;span class=&#39;n&#39;&gt;builder&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;.&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;pepperoni&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;=&lt;/span&gt; &lt;span class=&#39;nb&#39;&gt;YES&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;;&lt;/span&gt;
+        &lt;span class=&#39;n&#39;&gt;builder&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;.&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;mushrooms&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;=&lt;/span&gt; &lt;span class=&#39;nb&#39;&gt;YES&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;;&lt;/span&gt;
+    &lt;span class=&#39;p&#39;&gt;}];&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;At first I dismissed it altogether. Being familiar with the builder pattern in C#, I considered this Objective-C variant to be somewhat contrived and lacking the typical fluent syntax characterized by method chaining.&lt;/p&gt;
+
+&lt;p&gt;A week or two later, I watched a video about &lt;a href=&quot;https://www.youtube.com/watch?v=OiY1cheLpmI&quot;&gt;Building Paper&lt;/a&gt; and learned about &lt;a href=&quot;https://code.facebook.com/posts/234067533455773/introducing-pop-the-animation-engine-behind-paper/&quot;&gt;Pop&lt;/a&gt;, the animation engine that was released by Facebook as (yet another) open source framework for iOS. Looking further into this the next day, I encountered the following code snippet in the Pop documentation:&lt;/p&gt;
+&lt;div class=&#39;highlight&#39;&gt;&lt;pre&gt;&lt;code class=&#39;objc&#39;&gt;    &lt;span class=&#39;n&#39;&gt;prop&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;=&lt;/span&gt; &lt;span class=&#39;p&#39;&gt;[&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;POPAnimatableProperty&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;propertyWithName&lt;/span&gt;&lt;span class=&#39;o&#39;&gt;:&lt;/span&gt;&lt;span class=&#39;s&#39;&gt;@&amp;quot;com.foo.radio.volume&amp;quot;&lt;/span&gt;
+                                       &lt;span class=&#39;nl&#39;&gt;initializer:&lt;/span&gt;&lt;span class=&#39;o&#39;&gt;^&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;(&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;POPMutableAnimatableProperty&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;*&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;prop&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;)&lt;/span&gt; &lt;span class=&#39;p&#39;&gt;{&lt;/span&gt;
+        &lt;span class=&#39;c1&#39;&gt;// read value&lt;/span&gt;
+        &lt;span class=&#39;n&#39;&gt;prop&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;.&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;readBlock&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;=&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;^&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;(&lt;/span&gt;&lt;span class=&#39;kt&#39;&gt;id&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;obj&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;,&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;CGFloat&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;values&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;[])&lt;/span&gt; &lt;span class=&#39;p&#39;&gt;{&lt;/span&gt;
+            &lt;span class=&#39;n&#39;&gt;values&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;[&lt;/span&gt;&lt;span class=&#39;mi&#39;&gt;0&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;]&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;=&lt;/span&gt; &lt;span class=&#39;p&#39;&gt;[&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;obj&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;volume&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;];&lt;/span&gt;
+        &lt;span class=&#39;p&#39;&gt;};&lt;/span&gt;
+        &lt;span class=&#39;c1&#39;&gt;// write value&lt;/span&gt;
+        &lt;span class=&#39;n&#39;&gt;prop&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;.&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;writeBlock&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;=&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;^&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;(&lt;/span&gt;&lt;span class=&#39;kt&#39;&gt;id&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;obj&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;,&lt;/span&gt; &lt;span class=&#39;k&#39;&gt;const&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;CGFloat&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;values&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;[])&lt;/span&gt; &lt;span class=&#39;p&#39;&gt;{&lt;/span&gt;
+            &lt;span class=&#39;p&#39;&gt;[&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;obj&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;setVolume&lt;/span&gt;&lt;span class=&#39;o&#39;&gt;:&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;values&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;[&lt;/span&gt;&lt;span class=&#39;mi&#39;&gt;0&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;]];&lt;/span&gt;
+        &lt;span class=&#39;p&#39;&gt;};&lt;/span&gt;
+        &lt;span class=&#39;c1&#39;&gt;// dynamics threshold&lt;/span&gt;
+        &lt;span class=&#39;n&#39;&gt;prop&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;.&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;threshold&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;=&lt;/span&gt; &lt;span class=&#39;mf&#39;&gt;0.01&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;;&lt;/span&gt;
+    &lt;span class=&#39;p&#39;&gt;}];&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;It’s that same builder pattern again! However, there is one small but important thing that the Facebook example makes obvious and that I failed to realize before: &lt;em&gt;there is no need to add dedicated builder objects to Objective-C because they are already present in the language in the form of mutable objects.&lt;/em&gt; In fact, this allows us to implement the builder patter in a more generic way, e.g. as a category on &lt;code&gt;NSObject&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#39;highlight&#39;&gt;&lt;pre&gt;&lt;code class=&#39;objc&#39;&gt;    &lt;span class=&#39;k&#39;&gt;@interface&lt;/span&gt; &lt;span class=&#39;nc&#39;&gt;NSObject&lt;/span&gt; &lt;span class=&#39;nl&#39;&gt;(Builder)&lt;/span&gt;
+
+    &lt;span class=&#39;o&#39;&gt;-&lt;/span&gt; &lt;span class=&#39;p&#39;&gt;(&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;instancetype&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;)&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;initUsingBlock&lt;/span&gt;&lt;span class=&#39;o&#39;&gt;:&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;(&lt;/span&gt;&lt;span class=&#39;kt&#39;&gt;void&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;(&lt;/span&gt;&lt;span class=&#39;o&#39;&gt;^&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;)(&lt;/span&gt;&lt;span class=&#39;kt&#39;&gt;id&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;mutableCopy&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;))&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;block&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;;&lt;/span&gt;
+
+    &lt;span class=&#39;k&#39;&gt;@end&lt;/span&gt;
+
+    &lt;span class=&#39;k&#39;&gt;@implementation&lt;/span&gt; &lt;span class=&#39;nc&#39;&gt;NSObject&lt;/span&gt; &lt;span class=&#39;nl&#39;&gt;(Builder)&lt;/span&gt;
+
+    &lt;span class=&#39;o&#39;&gt;-&lt;/span&gt; &lt;span class=&#39;p&#39;&gt;(&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;instancetype&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;)&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;initUsingBlock&lt;/span&gt;&lt;span class=&#39;o&#39;&gt;:&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;(&lt;/span&gt;&lt;span class=&#39;kt&#39;&gt;void&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;(&lt;/span&gt;&lt;span class=&#39;o&#39;&gt;^&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;)(&lt;/span&gt;&lt;span class=&#39;kt&#39;&gt;id&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;mutableCopy&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;))&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;block&lt;/span&gt;
+    &lt;span class=&#39;p&#39;&gt;{&lt;/span&gt;
+        &lt;span class=&#39;n&#39;&gt;self&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;=&lt;/span&gt; &lt;span class=&#39;p&#39;&gt;[&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;self&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;init&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;];&lt;/span&gt;
+        &lt;span class=&#39;k&#39;&gt;if&lt;/span&gt; &lt;span class=&#39;p&#39;&gt;(&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;self&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;block&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;)&lt;/span&gt;
+        &lt;span class=&#39;p&#39;&gt;{&lt;/span&gt;
+            &lt;span class=&#39;kt&#39;&gt;id&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;mutableCopy&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;=&lt;/span&gt; &lt;span class=&#39;p&#39;&gt;[&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;self&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;mutableCopy&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;];&lt;/span&gt;
+            &lt;span class=&#39;n&#39;&gt;block&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;(&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;mutableCopy&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;);&lt;/span&gt;
+            &lt;span class=&#39;n&#39;&gt;self&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;=&lt;/span&gt; &lt;span class=&#39;p&#39;&gt;[&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;mutableCopy&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;copy&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;];&lt;/span&gt;
+        &lt;span class=&#39;p&#39;&gt;}&lt;/span&gt;
+        &lt;span class=&#39;k&#39;&gt;return&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;self&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;;&lt;/span&gt;
+    &lt;span class=&#39;p&#39;&gt;}&lt;/span&gt;
+
+    &lt;span class=&#39;k&#39;&gt;@end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;There are some obvious limitations with this simple approach (most notably it only works for default initializers), but without adding anything else we can now start writing code like this:&lt;/p&gt;
+&lt;div class=&#39;highlight&#39;&gt;&lt;pre&gt;&lt;code class=&#39;objc&#39;&gt;    &lt;span class=&#39;n&#39;&gt;NSParagraphStyle&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;*&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;paragraphStyle&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;=&lt;/span&gt;
+    &lt;span class=&#39;p&#39;&gt;[[&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;NSParagraphStyle&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;alloc&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;]&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;initUsingBlock&lt;/span&gt;&lt;span class=&#39;o&#39;&gt;:^&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;(&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;NSMutableParagraphStyle&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;*&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;paragraphStyle&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;)&lt;/span&gt; &lt;span class=&#39;p&#39;&gt;{&lt;/span&gt;
+        &lt;span class=&#39;n&#39;&gt;paragraphStyle&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;.&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;alignment&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;=&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;NSTextAlignmentCenter&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;;&lt;/span&gt;
+        &lt;span class=&#39;n&#39;&gt;paragraphStyle&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;.&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;lineSpacing&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;=&lt;/span&gt; &lt;span class=&#39;mf&#39;&gt;0.0&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;;&lt;/span&gt;
+    &lt;span class=&#39;p&#39;&gt;}];&lt;/span&gt;
+    
+    &lt;span class=&#39;n&#39;&gt;NSDictionary&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;*&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;attributes&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;=&lt;/span&gt; &lt;span class=&#39;p&#39;&gt;@{&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;NSParagraphStyleAttributeName&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;:&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;paragraphStyle&lt;/span&gt; &lt;span class=&#39;p&#39;&gt;};&lt;/span&gt;
+    
+    &lt;span class=&#39;n&#39;&gt;NSAttributedString&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;*&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;text&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;=&lt;/span&gt;
+    &lt;span class=&#39;p&#39;&gt;[[&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;NSAttributedString&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;alloc&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;]&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;initUsingBlock&lt;/span&gt;&lt;span class=&#39;o&#39;&gt;:^&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;(&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;NSMutableAttributedString&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;*&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;text&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;)&lt;/span&gt; &lt;span class=&#39;p&#39;&gt;{&lt;/span&gt;
+        &lt;span class=&#39;p&#39;&gt;[&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;text&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;appendAttributedString&lt;/span&gt;&lt;span class=&#39;o&#39;&gt;:&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;[[&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;NSAttributedString&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;alloc&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;]&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;initWithString&lt;/span&gt;&lt;span class=&#39;o&#39;&gt;:&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;paragraph1&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;]];&lt;/span&gt;
+        &lt;span class=&#39;p&#39;&gt;[&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;text&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;appendAttributedString&lt;/span&gt;&lt;span class=&#39;o&#39;&gt;:&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;[[&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;NSAttributedString&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;alloc&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;]&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;initWithString&lt;/span&gt;&lt;span class=&#39;o&#39;&gt;:&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;paragraph2&lt;/span&gt;
+                                                                     &lt;span class=&#39;nl&#39;&gt;attributes:&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;attributes&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;]];&lt;/span&gt;
+        &lt;span class=&#39;p&#39;&gt;[&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;text&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;appendAttributedString&lt;/span&gt;&lt;span class=&#39;o&#39;&gt;:&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;[[&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;NSAttributedString&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;alloc&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;]&lt;/span&gt; &lt;span class=&#39;n&#39;&gt;initWithString&lt;/span&gt;&lt;span class=&#39;o&#39;&gt;:&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;paragraph3&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;]];&lt;/span&gt;
+    &lt;span class=&#39;p&#39;&gt;}];&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;The same implementation can be reused for all other classes with mutable variants. Instead of implementing a &lt;code&gt;PizzaBuilder&lt;/code&gt; class with a &lt;code&gt;build&lt;/code&gt; method, and adding an &lt;code&gt;initWithBuilder&lt;/code&gt; method in the &lt;code&gt;Pizza&lt;/code&gt; class, we just need to implement a &lt;code&gt;MutablePizza&lt;/code&gt; class and the default copy methods. This limits boilerplate code to a bare minimum and makes the builder pattern a more natural fit for the language.&lt;/p&gt;</description>
+    </item>
+    
     
     
     <item>
