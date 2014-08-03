@@ -1,9 +1,9 @@
 inc:
   # Blog Information
   blog_title:       "Cocoanuts iOS Blog"
-  blog_subtitle:    "Adventures in Objective-C"
+  blog_subtitle:    "Adventures in Swift & Objective-C"
   title:            "Cocoanuts iOS Blog"
-  subtitle:         "Adventures in Objective-C"
+  subtitle:         "Adventures in Swift & Objective-C"
   cover_image:      blog-cover.jpg
   logo:             logo.png
   about_image:      about.jpg

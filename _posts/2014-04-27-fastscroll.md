@@ -77,7 +77,7 @@ AFNetworking's UIImageView category must be one of its most popular features. Th
 
 One downside of using this convenient category is that it can lead to undesired artifacts when scrolling fast in a table view. In the UIImageView+AFNetworking implementation, certain decisions are made to optimize for loading images currently on screen, which is done by cancelling previous requests for offscreen views. This behavior can interfere with cell reuse behavior, which may result in images not being loaded correctly, as shown below:
 
-<img src="/images/2014042701.gif">
+![Images are not loaded correctly](/images/2014042701.gif)
 
 To figure out what can be done about these unwanted side-effects, we switch to a lower level implementation using an `AFHTTPRequestOperationManager` and its `GET:parameters:success:failure` method.
 
@@ -117,7 +117,7 @@ To figure out what can be done about these unwanted side-effects, we switch to a
 
 When running this code, it becomes obvious why cancelling requests for offscreen views is not such a bad idea: if the request queue cannot keep up with the speed of scrolling, the images in the reused cells get overwritten multiple times (and if the responses would arrive out of order, we could end up with wrong images in the cells).
 
-<img src="/images/2014042702.gif">
+![Images get overwritten multiple times](/images/2014042702.gif)
 
 There are two simple approaches to work around this. The first one is to cancel the pending request whenever a cell is reused and a new request is queued:
 
@@ -180,7 +180,7 @@ The `associatedObject` property is used in the code above to remember the previo
 
 Now the result looks a lot better, but the downside is that the images for the cells you quickly scroll past will only get loaded when you scroll back up, because their initial fetch request has been cancelled: 
 
-<img src="/images/2014042703.gif">
+![Image requests are cancelled](/images/2014042703.gif)
 
 An alternative approach is to let each queued operation finish, but associate URLs with reused cells, and only assign the fetched image if it corresponds to the last loaded URL for that cell:
 
@@ -216,6 +216,6 @@ An alternative approach is to let each queued operation finish, but associate UR
 
 Now the images for the cells you scroll past will be cached too, with the downside that loading the images for the bottom cells will be noticeably slower:
 
-<img src="/images/2014042704.gif">
+![Image requests are queued](/images/2014042704.gif)
 
 Of course you can implemented more advanced strategies, e.g. pause rather than cancel requests and resume them when higher priority requests have finished. The main thing to take away is that, when you hit a wall with a convenient high-level API, you can always drop down to a lower level API and implement your own logic on top of it.  
