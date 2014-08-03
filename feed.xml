@@ -6,9 +6,42 @@
     <atom:link href="http://cocoanuts.mobi/feed.xml" rel="self" type="application/rss+xml" />
     <description></description>
     <language>en-us</language>
-    <pubDate>Thu, 15 May 2014 17:52:07 +0000</pubDate>
-    <lastBuildDate>Thu, 15 May 2014 17:52:07 +0000</lastBuildDate>
+    <pubDate>Sun, 03 Aug 2014 19:53:01 +0000</pubDate>
+    <lastBuildDate>Sun, 03 Aug 2014 19:53:01 +0000</lastBuildDate>
 
+    
+    
+    <item>
+      <title>What would you do if you weren't afraid?</title>
+      <link>http://cocoanuts.mobi/2014/08/03/facebook/</link>
+      <pubDate>Sun, 03 Aug 2014 00:00:00 +0000</pubDate>
+      <author></author>
+      <guid>http://cocoanuts.mobi/2014/08/03/facebook</guid>
+      <description>&lt;p&gt;It has been almost three months since my last blog post. Things have changed a bit since then. Three months ago, I didn’t expect a brand new programming language to be announced at WWDC. I wasn’t planning to switch jobs again any time soon. I certainly didn’t picture myself living in a different country in the foreseeable future.&lt;/p&gt;
+
+&lt;p&gt;Like all good stories, it started with a LinkedIn recruiter email. Except that this one was slightly different. It felt somewhat more personal and referenced some professional details that were not listed directly in my LinkedIn profile. Also, it was coming from Facebook. Now I have to admit that working for Facebook has &lt;em&gt;not&lt;/em&gt; been a life long dream of mine. I briefly considered the idea of working for a big software company in Silicon Valley or London when I was a bit younger, but back then it was Apple rather than Facebook I was thinking of.&lt;/p&gt;
+
+&lt;p&gt;However, since I began working as a full-time iOS developer about a year ago, I started looking at Facebook with different eyes. I noticed that Matt Galloway, who wrote &lt;a href=&quot;http://www.effectiveobjectivec.com&quot;&gt;my favorite book about Objective-C&lt;/a&gt;, started working there. Nick Lockwood, Graham Lee and John Harper followed later this year. I had been impressed with the open source iOS frameworks that Facebook released. I tried out tools like &lt;a href=&quot;https://github.com/facebook/ios-snapshot-test-case&quot;&gt;Snapshot test case&lt;/a&gt;, &lt;a href=&quot;https://github.com/facebook/chisel&quot;&gt;Chisel&lt;/a&gt; and &lt;a href=&quot;https://github.com/facebook/Tweaks&quot;&gt;Tweaks&lt;/a&gt; and they turned out to be really useful. I watched a video about &lt;a href=&quot;https://www.youtube.com/watch?v=OiY1cheLpmI&quot;&gt;Building Paper&lt;/a&gt;, which made me realize just how far engineers at Facebook are pushing the limits of iOS, and how challenging it must be to work on apps that are used by a &lt;em&gt;billion&lt;/em&gt; people.&lt;/p&gt;
+
+&lt;p&gt;So I did what I never do. I replied to a LinkedIn recruiter email and mentioned that I was willing to discuss the opportunity over the phone. I still think it was more curiosity than anything else. I had a job I was perfectly happy with and I had bought a nice house near &lt;a href=&quot;http://americablog.com/2014/07/knew-ghent-belgium-prettiest-city-world.html&quot;&gt;Ghent&lt;/a&gt; where I was living with my wife and two little children. It seemed &lt;em&gt;very&lt;/em&gt; unlikely that we would suddenly leave all of this behind to go live and work in London. But I figured that I had nothing to lose and a simple phone call could do no harm.&lt;/p&gt;
+
+&lt;p&gt;I wasn’t nervous for that first call, but I didn’t really know what to expect either. The technical recruiter was genuinely friendly. We discussed my past experiences and aspirations for about half an hour, then she moved on to a series of multiple choice questions about Objective-C. I was caught a little by surprise by this, but the questions were not &lt;em&gt;too&lt;/em&gt; hard. Of course, after that first call, I no longer felt like I had nothing to lose. After all, I had made it through the initial screening and there was a very small but real chance that I would be able to join the iOS team at Facebook London. The team led by Alan Cannistraro, who had indirectly introduced me (and the rest of the world) to iOS development five years ago, when I spent the entire summer watching the Stanford videos on iTunes U.&lt;/p&gt;
+
+&lt;p&gt;The next hurdle was a Skype call with an iOS engineer in Menlo Park, which would mostly consist of doing coding exercises in a collaborative editor. I had about ten days to prepare myself, so I dusted off an old book on data structures and downloaded a copy of &lt;a href=&quot;http://www.amazon.com/Cracking-Coding-Interview-Programming-Questions/dp/098478280X&quot;&gt;Cracking the Coding Interview&lt;/a&gt;. The coding interview itself did &lt;em&gt;not&lt;/em&gt; go as well as I had hoped. I think I was simply too nervous (and too tired after a day’s work) to perform at my best. I struggled with the easy warm-up question and rushed into the harder follow-up question. Fortunately, I did remember more or less what a &lt;a href=&quot;http://en.wikipedia.org/wiki/Trie&quot;&gt;trie&lt;/a&gt; is and what it is good for, so it wasn’t a total disaster either.&lt;/p&gt;
+
+&lt;p&gt;My recruiter called me later that week to tell me that they still wanted to fly me in to London to do an interview loop. At that point I decided to just go for it and deal with all possible practical considerations later. The next weeks were pretty intense. I spent every spare moment studying &lt;a href=&quot;http://www.amazon.com/Algorithm-Design-Manual-Steve-Skiena/dp/0387948600&quot;&gt;algorithm design&lt;/a&gt; and &lt;a href=&quot;https://www.mikeash.com/pyblog/&quot;&gt;advanced iOS topics&lt;/a&gt;. It’s weird how you forget about Peterson, Dijkstra, Knuth and friends once you are graduated and start developing actual software. I guess &lt;a href=&quot;http://steve-yegge.blogspot.be/2008/03/get-that-job-at-google.html&quot;&gt;real-world work really does make you rusty&lt;/a&gt;. Fortunately my daughter was kind enough to let me use her whiteboard to practice my coding skills:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2014080301.jpg&quot; alt=&quot;Whiteboard coding&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;And then I went to London. I left on Sunday evening and had taken the Monday off from work. When I arrived at the new Facebook offices at Regent’s place, I felt surprisingly calm. I knew I had prepared the best I could, so if it didn’t work out after all, it probably just wan’t meant to be. The location was impressive, with coffee bars, candy stores and arcade rooms spread across the office floors.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2014080302.jpg&quot; alt=&quot;Regents Place, London&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;The actual interviews were more or less what I had expected: whiteboard coding, architectural discussions, motivational questions, and more whiteboard coding. If you are looking for more details, there is &lt;a href=&quot;https://www.facebook.com/notes/facebook-engineering/get-that-job-at-facebook/10150964382448920&quot;&gt;a post&lt;/a&gt; that explains the technical recruitment process at Facebook quite accurately. I finally got to meet my recruiter in person, and during lunch I was joined by the other Belgian iOS developer working there. Every person I talked to appeared to be friendly, interested, passionate and smart. As I flew back to Belgium at the end of the day, I felt exhausted but also started to feel more and more optimistic.&lt;/p&gt;
+
+&lt;p&gt;While waiting for the final round of feedback, my wife and I finally started considering the practical implications of moving to London more seriously, but at that point it somehow felt like our decision was already made. Were we going to take this risk or were we going to wonder the rest of our lives what might have been? I had spent two months contemplating what it would be like to work at Facebook and had invested a lot of energy in preparing for the interviews. Looking back, there wasn’t really a clear point in time where we decided anything at all, things just led from one thing to another. So here we are now: selling old furniture, browsing rental properties, teaching our daughter her first few English words. My first day at Facebook is not until November, but the adventure has already started.&lt;/p&gt;</description>
+    </item>
+    
     
     
     <item>
@@ -151,7 +184,7 @@
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;One downside of using this convenient category is that it can lead to undesired artifacts when scrolling fast in a table view. In the UIImageView+AFNetworking implementation, certain decisions are made to optimize for loading images currently on screen, which is done by cancelling previous requests for offscreen views. This behavior can interfere with cell reuse behavior, which may result in images not being loaded correctly, as shown below:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#39;/images/2014042701.gif&#39; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/2014042701.gif&quot; alt=&quot;Images are not loaded correctly&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;To figure out what can be done about these unwanted side-effects, we switch to a lower level implementation using an &lt;code&gt;AFHTTPRequestOperationManager&lt;/code&gt; and its &lt;code&gt;GET:parameters:success:failure&lt;/code&gt; method.&lt;/p&gt;
 &lt;div class=&#39;highlight&#39;&gt;&lt;pre&gt;&lt;code class=&#39;objc&#39;&gt;    &lt;span class=&#39;o&#39;&gt;-&lt;/span&gt; &lt;span class=&#39;p&#39;&gt;(&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;AFHTTPRequestOperationManager&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;*&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;)&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;operationManager&lt;/span&gt;
@@ -186,7 +219,7 @@
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;When running this code, it becomes obvious why cancelling requests for offscreen views is not such a bad idea: if the request queue cannot keep up with the speed of scrolling, the images in the reused cells get overwritten multiple times (and if the responses would arrive out of order, we could end up with wrong images in the cells).&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#39;/images/2014042702.gif&#39; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/2014042702.gif&quot; alt=&quot;Images get overwritten multiple times&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;There are two simple approaches to work around this. The first one is to cancel the pending request whenever a cell is reused and a new request is queued:&lt;/p&gt;
 &lt;div class=&#39;highlight&#39;&gt;&lt;pre&gt;&lt;code class=&#39;objc&#39;&gt;    &lt;span class=&#39;o&#39;&gt;-&lt;/span&gt; &lt;span class=&#39;p&#39;&gt;(&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;UITableViewCell&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;*&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;)&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;tableView&lt;/span&gt;&lt;span class=&#39;o&#39;&gt;:&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;(&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;UITableView&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;*&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;)&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;tableView&lt;/span&gt;
@@ -239,7 +272,7 @@
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Now the result looks a lot better, but the downside is that the images for the cells you quickly scroll past will only get loaded when you scroll back up, because their initial fetch request has been cancelled:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#39;/images/2014042703.gif&#39; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/2014042703.gif&quot; alt=&quot;Image requests are cancelled&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;An alternative approach is to let each queued operation finish, but associate URLs with reused cells, and only assign the fetched image if it corresponds to the last loaded URL for that cell:&lt;/p&gt;
 &lt;div class=&#39;highlight&#39;&gt;&lt;pre&gt;&lt;code class=&#39;objc&#39;&gt;    &lt;span class=&#39;o&#39;&gt;-&lt;/span&gt; &lt;span class=&#39;p&#39;&gt;(&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;UITableViewCell&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;*&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;)&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;tableView&lt;/span&gt;&lt;span class=&#39;o&#39;&gt;:&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;(&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;UITableView&lt;/span&gt; &lt;span class=&#39;o&#39;&gt;*&lt;/span&gt;&lt;span class=&#39;p&#39;&gt;)&lt;/span&gt;&lt;span class=&#39;n&#39;&gt;tableView&lt;/span&gt;
@@ -270,7 +303,7 @@
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Now the images for the cells you scroll past will be cached too, with the downside that loading the images for the bottom cells will be noticeably slower:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#39;/images/2014042704.gif&#39; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/2014042704.gif&quot; alt=&quot;Image requests are queued&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Of course you can implemented more advanced strategies, e.g. pause rather than cancel requests and resume them when higher priority requests have finished. The main thing to take away is that, when you hit a wall with a convenient high-level API, you can always drop down to a lower level API and implement your own logic on top of it.&lt;/p&gt;</description>
     </item>
@@ -312,19 +345,19 @@
 
 &lt;p&gt;Just like there are many patterns for code reuse, there are also different ways to reuse interface components. To start with something very basic, consider a view controller that occurs in two different flows in your application, e.g. a settings screen that is shown during the activation flow, but can also be accessed later through a navigation drawer. When both flows are defined in the same storyboard, you can lay out the common view controller inside the story board and use multiple segues to link it to the different flows:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#39;/images/2014032401.png&#39; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/2014032401.png&quot; alt=&quot;Single storyboard&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Keeping the entire flow of your application defined inside a single storyboard is not always a good idea. When the application grows and multiple developers start working on the same project, defining different flows (or subflows) in separate storyboards helps to avoid ugly merge conflicts. In this case you can define the common view controller in its own interface file and add a reference to it in the different storyboards:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#39;/images/2014032402.png&#39; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/2014032402.png&quot; alt=&quot;Multiple storyboards&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Often you don’t want to reuse entire screens but only certain parts of it. One approach is to use the view controller containment feature, i.e. define a view controller for each reusable view and use embed segues to link these view controllers to container views in other view controllers. Again you have the option to either lay out the view controller for the reusable view inside the storyboard itself or in a separate interface file:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#39;/images/2014032403.png&#39; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/2014032403.png&quot; alt=&quot;View controller containment&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;This approach works but in many cases feels like overkill because the additional view controllers clutter your code base and storyboards. A more lightweight way of working is to reference &lt;em&gt;views&lt;/em&gt; rather than view controllers in your storyboards and define the reusable &lt;em&gt;view&lt;/em&gt; in a separate interface file:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#39;/images/2014032404.png&#39; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/2014032404.png&quot; alt=&quot;View containment&quot; /&gt;&lt;/p&gt;
 
 &lt;h2 id=&quot;the_problem&quot;&gt;The problem&lt;/h2&gt;
 
@@ -455,7 +488,7 @@
 
 &lt;p&gt;For components like labels and image views, the intrinsic size can be determined at runtime based on the content. Because of this, Auto Layout does not require you to fully constrain the width and height of these views. Custom views defined in a nib file may also be able to determine their intrinsic size dynamically, but when you add a placeholder view to a view controller in a storyboard, you need to consider this explicitly or Auto Layout will complain about missing constraints. Fortunately there is a dropdown in the Size inspector that allows you to specify that a view is just a placeholder and the width or height will be determined at runtime, when the placeholder has been replaced with actual content:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#39;/images/2014032405.png&#39; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/2014032405.png&quot; alt=&quot;Specifying placeholder views&quot; /&gt;&lt;/p&gt;
 
 &lt;h2 id=&quot;an_alternative_approach&quot;&gt;An alternative approach&lt;/h2&gt;
 

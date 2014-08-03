@@ -59,19 +59,19 @@
 
 <p>Just like there are many patterns for code reuse, there are also different ways to reuse interface components. To start with something very basic, consider a view controller that occurs in two different flows in your application, e.g. a settings screen that is shown during the activation flow, but can also be accessed later through a navigation drawer. When both flows are defined in the same storyboard, you can lay out the common view controller inside the story board and use multiple segues to link it to the different flows:</p>
 
-<p><img src='/images/2014032401.png' /></p>
+<p><img src="/images/2014032401.png" alt="Single storyboard" /></p>
 
 <p>Keeping the entire flow of your application defined inside a single storyboard is not always a good idea. When the application grows and multiple developers start working on the same project, defining different flows (or subflows) in separate storyboards helps to avoid ugly merge conflicts. In this case you can define the common view controller in its own interface file and add a reference to it in the different storyboards:</p>
 
-<p><img src='/images/2014032402.png' /></p>
+<p><img src="/images/2014032402.png" alt="Multiple storyboards" /></p>
 
 <p>Often you don’t want to reuse entire screens but only certain parts of it. One approach is to use the view controller containment feature, i.e. define a view controller for each reusable view and use embed segues to link these view controllers to container views in other view controllers. Again you have the option to either lay out the view controller for the reusable view inside the storyboard itself or in a separate interface file:</p>
 
-<p><img src='/images/2014032403.png' /></p>
+<p><img src="/images/2014032403.png" alt="View controller containment" /></p>
 
 <p>This approach works but in many cases feels like overkill because the additional view controllers clutter your code base and storyboards. A more lightweight way of working is to reference <em>views</em> rather than view controllers in your storyboards and define the reusable <em>view</em> in a separate interface file:</p>
 
-<p><img src='/images/2014032404.png' /></p>
+<p><img src="/images/2014032404.png" alt="View containment" /></p>
 
 <h2 id="the_problem">The problem</h2>
 
@@ -202,7 +202,7 @@
 
 <p>For components like labels and image views, the intrinsic size can be determined at runtime based on the content. Because of this, Auto Layout does not require you to fully constrain the width and height of these views. Custom views defined in a nib file may also be able to determine their intrinsic size dynamically, but when you add a placeholder view to a view controller in a storyboard, you need to consider this explicitly or Auto Layout will complain about missing constraints. Fortunately there is a dropdown in the Size inspector that allows you to specify that a view is just a placeholder and the width or height will be determined at runtime, when the placeholder has been replaced with actual content:</p>
 
-<p><img src='/images/2014032405.png' /></p>
+<p><img src="/images/2014032405.png" alt="Specifying placeholder views" /></p>
 
 <h2 id="an_alternative_approach">An alternative approach</h2>
 
