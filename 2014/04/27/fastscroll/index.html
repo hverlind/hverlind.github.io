@@ -12,7 +12,9 @@
     <meta name="title" content="Asynchronous image loading in fast scrolling table cells ">
     <link rel="canonical" href="http://cocoanuts.mobi/2014/04/27/fastscroll/">
      
-           
+    
+        
+    <meta property="og:type" content="article"/>
     <meta property="og:title" content="Asynchronous image loading in fast scrolling table cells "/>
     <meta property="og:url" content="http://cocoanuts.mobi/2014/04/27/fastscroll/"/>
     
@@ -234,10 +236,14 @@
 <p>Of course you can implemented more advanced strategies, e.g. pause rather than cancel requests and resume them when higher priority requests have finished. The main thing to take away is that, when you hit a wall with a convenient high-level API, you can always drop down to a lower level API and implement your own logic on top of it.</p>
             
 <div class="social">
+    
+    <div>
+        <div class="fb-like" data-width="150" data-layout="button_count" data-action="like" data-show-faces="true" data-send="false"></div>
+    </div>
+    
     <div>
         <a href="https://twitter.com/share" class="twitter-share-button"  data-text="Asynchronous image loading in fast scrolling table cells" data-related="hverlind">Tweet</a>
     </div>
-    
     
     
     
@@ -291,7 +297,14 @@
 <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 <script src="/assets/main.js"></script>
 <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
-
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=253595308025739";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
 
 
 

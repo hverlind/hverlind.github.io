@@ -12,7 +12,9 @@
     <meta name="title" content="Reusing views in storyboards with Auto Layout ">
     <link rel="canonical" href="http://cocoanuts.mobi/2014/03/26/reusable/">
      
-           
+    
+        
+    <meta property="og:type" content="article"/>
     <meta property="og:title" content="Reusing views in storyboards with Auto Layout "/>
     <meta property="og:url" content="http://cocoanuts.mobi/2014/03/26/reusable/"/>
     
@@ -249,10 +251,14 @@
 <p>As your project grows, being able to reuse interface components becomes gradually more important. Because of this, it is worth investing some effort right at the start to develop some generic reuse strategies that cover the edge cases. I still hope that future versions of Xcode will make it easier to reuse views in storyboards, but for now I manage to get by with some common UIView categories.</p>
             
 <div class="social">
+    
+    <div>
+        <div class="fb-like" data-width="150" data-layout="button_count" data-action="like" data-show-faces="true" data-send="false"></div>
+    </div>
+    
     <div>
         <a href="https://twitter.com/share" class="twitter-share-button"  data-text="Reusing views in storyboards with Auto Layout" data-related="hverlind">Tweet</a>
     </div>
-    
     
     
     
@@ -306,7 +312,14 @@
 <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 <script src="/assets/main.js"></script>
 <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
-
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=253595308025739";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
 
 
 
