@@ -242,6 +242,10 @@ a {
     }
 }
 
+div.fb-like.fb_iframe_widget span[style] {
+    height:25px !important;
+}
+
 .muted {
     color:$textmuted;
 }
