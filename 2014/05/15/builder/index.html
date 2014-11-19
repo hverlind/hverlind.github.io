@@ -57,69 +57,65 @@
 
         <section>
             <p>A few weeks ago I came across this <a href="http://www.annema.me/blog/post/2014/4/4/the-builder-pattern-in-objective-c">blog post</a> about a builder pattern for Objective-C. It was one of our interns who pointed me to the article and asked if I considered this to be a good idea. Here’s what it looks like:</p>
-<div class='highlight'><pre><code class='objc'>    <span class='n'>Pizza</span> <span class='o'>*</span><span class='n'>pizza</span> <span class='o'>=</span> <span class='p'>[</span><span class='n'>Pizza</span> <span class='n'>pizzaWithBlock</span><span class='o'>:^</span><span class='p'>(</span><span class='n'>PizzaBuilder</span> <span class='o'>*</span><span class='n'>builder</span><span class='p'>])</span> <span class='p'>{</span>
+<div class='highlight'><pre><code class='language-objc' data-lang='objc'><span class='n'>Pizza</span> <span class='o'>*</span><span class='n'>pizza</span> <span class='o'>=</span> <span class='p'>[</span><span class='n'>Pizza</span> <span class='nl'>pizzaWithBlock</span><span class='p'>:</span><span class='o'>^</span><span class='p'>(</span><span class='n'>PizzaBuilder</span> <span class='o'>*</span><span class='n'>builder</span><span class='p'>])</span> <span class='p'>{</span>
         <span class='n'>builder</span><span class='p'>.</span><span class='n'>size</span> <span class='o'>=</span> <span class='mi'>12</span><span class='p'>;</span>
         <span class='n'>builder</span><span class='p'>.</span><span class='n'>pepperoni</span> <span class='o'>=</span> <span class='nb'>YES</span><span class='p'>;</span>
         <span class='n'>builder</span><span class='p'>.</span><span class='n'>mushrooms</span> <span class='o'>=</span> <span class='nb'>YES</span><span class='p'>;</span>
-    <span class='p'>}];</span>
-</code></pre></div>
+    <span class='p'>}];</span></code></pre></div>
 <p>At first I dismissed it altogether. Being familiar with the builder pattern in C#, I considered this Objective-C variant to be somewhat contrived and lacking the typical fluent syntax characterized by method chaining.</p>
 
 <p>A week or two later, I watched a video about <a href="https://www.youtube.com/watch?v=OiY1cheLpmI">Building Paper</a> and learned about <a href="https://code.facebook.com/posts/234067533455773/introducing-pop-the-animation-engine-behind-paper/">Pop</a>, the animation engine that was released by Facebook as (yet another) open source framework for iOS. Looking further into this the next day, I encountered the following code snippet in the Pop documentation:</p>
-<div class='highlight'><pre><code class='objc'>    <span class='n'>prop</span> <span class='o'>=</span> <span class='p'>[</span><span class='n'>POPAnimatableProperty</span> <span class='n'>propertyWithName</span><span class='o'>:</span><span class='s'>@&quot;com.foo.radio.volume&quot;</span>
-                                       <span class='nl'>initializer:</span><span class='o'>^</span><span class='p'>(</span><span class='n'>POPMutableAnimatableProperty</span> <span class='o'>*</span><span class='n'>prop</span><span class='p'>)</span> <span class='p'>{</span>
+<div class='highlight'><pre><code class='language-objc' data-lang='objc'><span class='n'>prop</span> <span class='o'>=</span> <span class='p'>[</span><span class='n'>POPAnimatableProperty</span> <span class='nl'>propertyWithName</span><span class='p'>:</span><span class='s'>@&quot;com.foo.radio.volume&quot;</span>
+                                       <span class='nl'>initializer</span><span class='p'>:</span><span class='o'>^</span><span class='p'>(</span><span class='n'>POPMutableAnimatableProperty</span> <span class='o'>*</span><span class='n'>prop</span><span class='p'>)</span> <span class='p'>{</span>
         <span class='c1'>// read value</span>
         <span class='n'>prop</span><span class='p'>.</span><span class='n'>readBlock</span> <span class='o'>=</span> <span class='o'>^</span><span class='p'>(</span><span class='kt'>id</span> <span class='n'>obj</span><span class='p'>,</span> <span class='n'>CGFloat</span> <span class='n'>values</span><span class='p'>[])</span> <span class='p'>{</span>
             <span class='n'>values</span><span class='p'>[</span><span class='mi'>0</span><span class='p'>]</span> <span class='o'>=</span> <span class='p'>[</span><span class='n'>obj</span> <span class='n'>volume</span><span class='p'>];</span>
         <span class='p'>};</span>
         <span class='c1'>// write value</span>
         <span class='n'>prop</span><span class='p'>.</span><span class='n'>writeBlock</span> <span class='o'>=</span> <span class='o'>^</span><span class='p'>(</span><span class='kt'>id</span> <span class='n'>obj</span><span class='p'>,</span> <span class='k'>const</span> <span class='n'>CGFloat</span> <span class='n'>values</span><span class='p'>[])</span> <span class='p'>{</span>
-            <span class='p'>[</span><span class='n'>obj</span> <span class='n'>setVolume</span><span class='o'>:</span><span class='n'>values</span><span class='p'>[</span><span class='mi'>0</span><span class='p'>]];</span>
+            <span class='p'>[</span><span class='n'>obj</span> <span class='nl'>setVolume</span><span class='p'>:</span><span class='n'>values</span><span class='p'>[</span><span class='mi'>0</span><span class='p'>]];</span>
         <span class='p'>};</span>
         <span class='c1'>// dynamics threshold</span>
         <span class='n'>prop</span><span class='p'>.</span><span class='n'>threshold</span> <span class='o'>=</span> <span class='mf'>0.01</span><span class='p'>;</span>
-    <span class='p'>}];</span>
-</code></pre></div>
+    <span class='p'>}];</span></code></pre></div>
 <p>It’s that same builder pattern again! However, there is one small but important thing that the Facebook example makes obvious and that I failed to realize before: <em>there is no need to add dedicated builder objects to Objective-C because they are already present in the language in the form of mutable objects.</em> In fact, this allows us to implement the builder patter in a more generic way, e.g. as a category on <code>NSObject</code>:</p>
-<div class='highlight'><pre><code class='objc'>    <span class='k'>@interface</span> <span class='nc'>NSObject</span> <span class='nl'>(Builder)</span>
+<div class='highlight'><pre><code class='language-objc' data-lang='objc'><span class='k'>@interface</span> <span class='bp'>NSObject</span> <span class='nl'>(Builder)</span>
 
-    <span class='o'>-</span> <span class='p'>(</span><span class='n'>instancetype</span><span class='p'>)</span><span class='n'>initUsingBlock</span><span class='o'>:</span><span class='p'>(</span><span class='kt'>void</span><span class='p'>(</span><span class='o'>^</span><span class='p'>)(</span><span class='kt'>id</span> <span class='n'>mutableCopy</span><span class='p'>))</span><span class='n'>block</span><span class='p'>;</span>
+    <span class='o'>-</span> <span class='p'>(</span><span class='kt'>instancetype</span><span class='p'>)</span><span class='nl'>initUsingBlock</span><span class='p'>:(</span><span class='kt'>void</span><span class='p'>(</span><span class='o'>^</span><span class='p'>)(</span><span class='kt'>id</span> <span class='n'>mutableCopy</span><span class='p'>))</span><span class='n'>block</span><span class='p'>;</span>
 
     <span class='k'>@end</span>
 
-    <span class='k'>@implementation</span> <span class='nc'>NSObject</span> <span class='nl'>(Builder)</span>
+    <span class='k'>@implementation</span> <span class='bp'>NSObject</span> <span class='nl'>(Builder)</span>
 
-    <span class='o'>-</span> <span class='p'>(</span><span class='n'>instancetype</span><span class='p'>)</span><span class='n'>initUsingBlock</span><span class='o'>:</span><span class='p'>(</span><span class='kt'>void</span><span class='p'>(</span><span class='o'>^</span><span class='p'>)(</span><span class='kt'>id</span> <span class='n'>mutableCopy</span><span class='p'>))</span><span class='n'>block</span>
+    <span class='o'>-</span> <span class='p'>(</span><span class='kt'>instancetype</span><span class='p'>)</span><span class='nl'>initUsingBlock</span><span class='p'>:(</span><span class='kt'>void</span><span class='p'>(</span><span class='o'>^</span><span class='p'>)(</span><span class='kt'>id</span> <span class='n'>mutableCopy</span><span class='p'>))</span><span class='n'>block</span>
     <span class='p'>{</span>
-        <span class='n'>self</span> <span class='o'>=</span> <span class='p'>[</span><span class='n'>self</span> <span class='n'>init</span><span class='p'>];</span>
-        <span class='k'>if</span> <span class='p'>(</span><span class='n'>self</span> <span class='o'>&amp;&amp;</span> <span class='n'>block</span><span class='p'>)</span>
+        <span class='nb'>self</span> <span class='o'>=</span> <span class='p'>[</span><span class='nb'>self</span> <span class='n'>init</span><span class='p'>];</span>
+        <span class='k'>if</span> <span class='p'>(</span><span class='nb'>self</span> <span class='o'>&amp;&amp;</span> <span class='n'>block</span><span class='p'>)</span>
         <span class='p'>{</span>
-            <span class='kt'>id</span> <span class='n'>mutableCopy</span> <span class='o'>=</span> <span class='p'>[</span><span class='n'>self</span> <span class='n'>mutableCopy</span><span class='p'>];</span>
+            <span class='kt'>id</span> <span class='n'>mutableCopy</span> <span class='o'>=</span> <span class='p'>[</span><span class='nb'>self</span> <span class='n'>mutableCopy</span><span class='p'>];</span>
             <span class='n'>block</span><span class='p'>(</span><span class='n'>mutableCopy</span><span class='p'>);</span>
-            <span class='n'>self</span> <span class='o'>=</span> <span class='p'>[</span><span class='n'>mutableCopy</span> <span class='n'>copy</span><span class='p'>];</span>
+            <span class='nb'>self</span> <span class='o'>=</span> <span class='p'>[</span><span class='n'>mutableCopy</span> <span class='k'>copy</span><span class='p'>];</span>
         <span class='p'>}</span>
-        <span class='k'>return</span> <span class='n'>self</span><span class='p'>;</span>
+        <span class='k'>return</span> <span class='nb'>self</span><span class='p'>;</span>
     <span class='p'>}</span>
 
-    <span class='k'>@end</span>
-</code></pre></div>
+    <span class='k'>@end</span></code></pre></div>
 <p>There are some obvious limitations with this simple approach (most notably it only works for default initializers), but without adding anything else we can now start writing code like this:</p>
-<div class='highlight'><pre><code class='objc'>    <span class='n'>NSParagraphStyle</span> <span class='o'>*</span><span class='n'>paragraphStyle</span> <span class='o'>=</span>
-    <span class='p'>[[</span><span class='n'>NSParagraphStyle</span> <span class='n'>alloc</span><span class='p'>]</span> <span class='n'>initUsingBlock</span><span class='o'>:^</span><span class='p'>(</span><span class='n'>NSMutableParagraphStyle</span> <span class='o'>*</span><span class='n'>paragraphStyle</span><span class='p'>)</span> <span class='p'>{</span>
+<div class='highlight'><pre><code class='language-objc' data-lang='objc'><span class='bp'>NSParagraphStyle</span> <span class='o'>*</span><span class='n'>paragraphStyle</span> <span class='o'>=</span>
+    <span class='p'>[[</span><span class='bp'>NSParagraphStyle</span> <span class='n'>alloc</span><span class='p'>]</span> <span class='nl'>initUsingBlock</span><span class='p'>:</span><span class='o'>^</span><span class='p'>(</span><span class='bp'>NSMutableParagraphStyle</span> <span class='o'>*</span><span class='n'>paragraphStyle</span><span class='p'>)</span> <span class='p'>{</span>
         <span class='n'>paragraphStyle</span><span class='p'>.</span><span class='n'>alignment</span> <span class='o'>=</span> <span class='n'>NSTextAlignmentCenter</span><span class='p'>;</span>
         <span class='n'>paragraphStyle</span><span class='p'>.</span><span class='n'>lineSpacing</span> <span class='o'>=</span> <span class='mf'>0.0</span><span class='p'>;</span>
     <span class='p'>}];</span>
     
-    <span class='n'>NSDictionary</span> <span class='o'>*</span><span class='n'>attributes</span> <span class='o'>=</span> <span class='p'>@{</span> <span class='n'>NSParagraphStyleAttributeName</span> <span class='o'>:</span> <span class='n'>paragraphStyle</span> <span class='p'>};</span>
+    <span class='bp'>NSDictionary</span> <span class='o'>*</span><span class='n'>attributes</span> <span class='o'>=</span> <span class='l'>@{</span> <span class='nl'>NSParagraphStyleAttributeName</span> <span class='p'>:</span> <span class='n'>paragraphStyle</span> <span class='l'>}</span><span class='p'>;</span>
     
-    <span class='n'>NSAttributedString</span> <span class='o'>*</span><span class='n'>text</span> <span class='o'>=</span>
-    <span class='p'>[[</span><span class='n'>NSAttributedString</span> <span class='n'>alloc</span><span class='p'>]</span> <span class='n'>initUsingBlock</span><span class='o'>:^</span><span class='p'>(</span><span class='n'>NSMutableAttributedString</span> <span class='o'>*</span><span class='n'>text</span><span class='p'>)</span> <span class='p'>{</span>
-        <span class='p'>[</span><span class='n'>text</span> <span class='n'>appendAttributedString</span><span class='o'>:</span><span class='p'>[[</span><span class='n'>NSAttributedString</span> <span class='n'>alloc</span><span class='p'>]</span> <span class='n'>initWithString</span><span class='o'>:</span><span class='n'>paragraph1</span><span class='p'>]];</span>
-        <span class='p'>[</span><span class='n'>text</span> <span class='n'>appendAttributedString</span><span class='o'>:</span><span class='p'>[[</span><span class='n'>NSAttributedString</span> <span class='n'>alloc</span><span class='p'>]</span> <span class='n'>initWithString</span><span class='o'>:</span><span class='n'>paragraph2</span>
-                                                                     <span class='nl'>attributes:</span><span class='n'>attributes</span><span class='p'>]];</span>
-        <span class='p'>[</span><span class='n'>text</span> <span class='n'>appendAttributedString</span><span class='o'>:</span><span class='p'>[[</span><span class='n'>NSAttributedString</span> <span class='n'>alloc</span><span class='p'>]</span> <span class='n'>initWithString</span><span class='o'>:</span><span class='n'>paragraph3</span><span class='p'>]];</span>
-    <span class='p'>}];</span>
-</code></pre></div>
+    <span class='bp'>NSAttributedString</span> <span class='o'>*</span><span class='n'>text</span> <span class='o'>=</span>
+    <span class='p'>[[</span><span class='bp'>NSAttributedString</span> <span class='n'>alloc</span><span class='p'>]</span> <span class='nl'>initUsingBlock</span><span class='p'>:</span><span class='o'>^</span><span class='p'>(</span><span class='bp'>NSMutableAttributedString</span> <span class='o'>*</span><span class='n'>text</span><span class='p'>)</span> <span class='p'>{</span>
+        <span class='p'>[</span><span class='n'>text</span> <span class='nl'>appendAttributedString</span><span class='p'>:[[</span><span class='bp'>NSAttributedString</span> <span class='n'>alloc</span><span class='p'>]</span> <span class='nl'>initWithString</span><span class='p'>:</span><span class='n'>paragraph1</span><span class='p'>]];</span>
+        <span class='p'>[</span><span class='n'>text</span> <span class='nl'>appendAttributedString</span><span class='p'>:[[</span><span class='bp'>NSAttributedString</span> <span class='n'>alloc</span><span class='p'>]</span> <span class='nl'>initWithString</span><span class='p'>:</span><span class='n'>paragraph2</span>
+                                                                     <span class='nl'>attributes</span><span class='p'>:</span><span class='n'>attributes</span><span class='p'>]];</span>
+        <span class='p'>[</span><span class='n'>text</span> <span class='nl'>appendAttributedString</span><span class='p'>:[[</span><span class='bp'>NSAttributedString</span> <span class='n'>alloc</span><span class='p'>]</span> <span class='nl'>initWithString</span><span class='p'>:</span><span class='n'>paragraph3</span><span class='p'>]];</span>
+    <span class='p'>}];</span></code></pre></div>
 <p>The same implementation can be reused for all other classes with mutable variants. Instead of implementing a <code>PizzaBuilder</code> class with a <code>build</code> method, and adding an <code>initWithBuilder</code> method in the <code>Pizza</code> class, we just need to implement a <code>MutablePizza</code> class and the default copy methods. This limits boilerplate code to a bare minimum and makes the builder pattern a more natural fit for the language.</p>
             
 <div class="social">
@@ -143,7 +139,7 @@
             <address>
                <img src="/images/avatar.png">
                 <p>Written by <strong><a rel="author" href="https://twitter.com/hverlind" title="" target="_blank">Hannes Verlinde</a></strong><br>
-                <span class="muted">iOS Developer at In the Pocket</span>
+                <span class="muted">&nbsp;</span>
                 </p>
             </address>
 
@@ -177,7 +173,7 @@
             <a href="https://twitter.com/hverlind" title="Follow on Twitter" target="_blank"><i class="icon icon-twitter black"></i></a>
             <a href="/feed" title="Subscribe to RSS feed" target="_blank"><i class="icon icon-rss black"></i></a>
         </nav>
-        <p>Building your next app at <a href="http://inthepocket.mobi">Europe's finest mobile agency</a></p>
+        <p>Remove duplication and fix bad names. There is no silver bullet.</p>
     </div>
 </footer>
 
