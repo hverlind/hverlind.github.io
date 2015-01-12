@@ -1,0 +1,68 @@
+==================================================================
+https://keybase.io/hverlind
+--------------------------------------------------------------------
+
+I hereby claim:
+
+  * I am an admin of http://cocoanuts.mobi
+  * I am hverlind (https://keybase.io/hverlind) on keybase.
+  * I have a public key with fingerprint 0C6F A97C 2C30 CDCF B1C4  EF5B 0AC8 0F23 F574 5B49
+
+To claim this, I am signing this object:
+
+{
+    "body": {
+        "key": {
+            "fingerprint": "0c6fa97c2c30cdcfb1c4ef5b0ac80f23f5745b49",
+            "host": "keybase.io",
+            "key_id": "0ac80f23f5745b49",
+            "kid": "0101fe9283003cc94f801ac3f7aea870e384447fde9f35bbe0d2888b7a7e6e996d780a",
+            "uid": "e10a9dfcbcef18a8f73e8344a2e75500",
+            "username": "hverlind"
+        },
+        "service": {
+            "hostname": "cocoanuts.mobi",
+            "protocol": "http:"
+        },
+        "type": "web_service_binding",
+        "version": 1
+    },
+    "ctime": 1421096953,
+    "expire_in": 157680000,
+    "prev": "986f57bbe970ffb64283724dad2579b93aa1b97d55d42db54763935b7e4dc36c",
+    "seqno": 3,
+    "tag": "signature"
+}
+
+with the aforementioned key, yielding the PGP signature:
+
+-----BEGIN PGP MESSAGE-----
+Version: Keybase OpenPGP v2.0.1
+Comment: https://keybase.io/crypto
+
+yMIdAnicZZJbSBVBGMeP99KMU1KUCMVGoHhp9jq7p7ykiQgZgUYpkczMzuiinj2d
+s8dLpiQEVocogpLSBw2tCBElowt0pbKwoMKeCoJSo/AhfSgyzGatnpqXYb75/38f
+35/vUXKMJzEKhY496a2rvxo1/qAw7KkYhT9aBWybLYKvVaijSxez/DU0GAhafkfw
+CYBoDBmQSEQGxCQMi0ShTMUAER0wSWYqVFSsGEKWUGuHXAfHYBSiOZbNa/xRbZku
+53993Z8PEYiMGpIuAyATYihMByIiMoOIIh0CKuuKokBmUoPJKsYUmJKu6xgiSDVq
+GJoJdYA4LryEoyJAhskIJpSJOtIZlKkuKwqSKFRVAFxhiAb9qIFydW0jDdZbflNo
+yxJ4tdEi1I3AneSvgtjERv6wE8ppsLHF3YGg7fBavet2nIDPtTotAVfbRHH1X0o1
+5lQeJDfwFiHL9gs+kSuJY7lYUZFEYGiGKmcJtDlgBWm15SpUqOmAH7cNbeRIQ9d4
+YnxqAwLGsKbwnKCkmMiUVGhgQ0ZIxAY0VdVUJBOrCtRkg8cEqWISWSOCO9dBvy34
+eCcH1XBkyKrxIyccpELbw/v7Yz1RiZ74uGh3FTyJy73/FqT8dcJimy+t4O4ea2So
+dHiqCQydqmTq6si6FeVH5F8Fjd5Np2cmvaMvxgeOF813l3Skxi6/MXYgf5+dPL/6
+4+vZ7J7ehPcPq7reFcHv6dO19waPXorEb4vPr7y5MhoXzmWGX1zLrTp5NmUg4c3z
+Zu/tzVvFi5P7MmzfbMzYiZKywfT8hf6ewM9vkVs1eXduRIo/V73MiC7dcnnw7UT3
++cfXi0d2oLVJfXvN9onh8Yrpsr71G+MinQvt2mRpxb2M/nm50049cyHzCjj85dDE
+qrlPz6c8bHZ0zbmq7wczU840939NS9lQvn2xv2d/l5OzrGB3Q0d22ocvWbfKCp7N
+JO2q2Fn/NC+36dVvAAUnLg==
+=E2T0
+-----END PGP MESSAGE-----
+
+And finally, I am proving ownership of this host by posting or
+appending to this document.
+
+View my publicly-auditable identity here: https://keybase.io/hverlind
+
+==================================================================
+
