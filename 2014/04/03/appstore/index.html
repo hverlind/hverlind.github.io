@@ -56,7 +56,9 @@
         </header>
 
         <section>
-            <p>As you get close to submitting your app to the App Store, you really want your test builds to be as close as possible to the submitted binary. This is why we typically use Ad Hoc builds for our final test sessions, even when using enterprise distribution for earlier builds. But even with Ad Hoc builds, you still end up submitting a different binary, an App Store build that has never been installed on a real device. I have always felt slightly uncomfortable about this. No matter how solid your automated build system is, there always remains a tiny chance that something is wrong with your App Store build and you won’t be able to detect this before actually submitting the app.</p>
+            <p><em>Update: it was pointed out to me by <a href="https://twitter.com/lieven">@lieven</a> that the technique described here no longer works since Apple introduced iOS8 and Xcode 6.</em></p>
+
+<p>As you get close to submitting your app to the App Store, you really want your test builds to be as close as possible to the submitted binary. This is why we typically use Ad Hoc builds for our final test sessions, even when using enterprise distribution for earlier builds. But even with Ad Hoc builds, you still end up submitting a different binary, an App Store build that has never been installed on a real device. I have always felt slightly uncomfortable about this. No matter how solid your automated build system is, there always remains a tiny chance that something is wrong with your App Store build and you won’t be able to detect this before actually submitting the app.</p>
 
 <p>However, it turns out that you can in fact install an App Store build on a test device. We discovered this more or less by accident, while trying to explain the difference between Ad Hoc builds and App Store builds to an interested customer. At that point, the App Store build had already been submitted and approved (awaiting release), but we still worried that something might be wrong with it at first.</p>
 
@@ -67,6 +69,8 @@
 <p><em>“App Store provisioning profiles do not allow for a distribution built application to be installed on an Apple device. To install your distribution ready application on a device, you must create an Ad Hoc provisioning profile.”</em></p>
 
 <p>I could not find any reference to this note in the current version of the guide, but strictly speaking it does not contradict what is currently possible, i.e. you still need to create an Ad Hoc provisioning profile in order to install a distribution ready build. The cool thing is that this distribution ready build can be the exact same binary you submit to the App Store.</p>
+
+
             
 <div class="social">
     

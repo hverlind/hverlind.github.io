@@ -60,7 +60,7 @@
 
 <p>In any case, I think being able to work with Interface Builder and Auto Layout is an important skill to have as an iOS developer. The first time you try to set up constraints for a non-trivial view hierarchy can be a frustrating experience, and your productivity will probably first take a hit when you start working with storyboards, but you end up with some valuable new tools in your belt and a much better understanding of UIKit, if nothing else. I plan to write more about this topic in the coming months, but today I would like to focus on reusable views in the context of storyboards and Auto Layout.</p>
 
-<h2 id="reusing_interface_components">Reusing interface components</h2>
+<h2 id="reusing-interface-components">Reusing interface components</h2>
 
 <p>Just like there are many patterns for code reuse, there are also different ways to reuse interface components. To start with something very basic, consider a view controller that occurs in two different flows in your application, e.g. a settings screen that is shown during the activation flow, but can also be accessed later through a navigation drawer. When both flows are defined in the same storyboard, you can lay out the common view controller inside the story board and use multiple segues to link it to the different flows:</p>
 
@@ -78,171 +78,186 @@
 
 <p><img src="/images/2014032404.png" alt="View containment" /></p>
 
-<h2 id="the_problem">The problem</h2>
+<h2 id="the-problem">The problem</h2>
 
-<p>When building a storyboard, Interface Builder allows you to specify the runtime class of the views and view controllers in it. This is a consistent way to link generic interface components to custom code. When the storyboard is loaded into memory, instances of the corresponding classes will be instantiated through the <code>initWithCoder:</code> initializer. But often you want to link code to interface files in the other direction: you want to specify that an object of a certain class should be instantiated by loading the view or view controller from an interface file.</p>
+<p>When building a storyboard, Interface Builder allows you to specify the runtime class of the views and view controllers in it. This is a consistent way to link generic interface components to custom code. When the storyboard is loaded into memory, instances of the corresponding classes will be instantiated through the <code>initWithCoder:</code> initializer. But often you want to link code to interface files in the other direction: you want to specify that an object of a certain class should be instantiated by loading the view or view controller from an interface file. </p>
 
-<p>In the case of a view controller, this is pretty straightforward. For a view controller that is referenced in a storyboard, it suffices to override the getter of the <code>nibName</code> property in your view controller implementation and specify the name of the corresponding nib file:</p>
-<div class='highlight'><pre><code class='language-objc' data-lang='objc'><span class='k'>@implementation</span> <span class='nc'>MyViewController</span>
+<p>In the case of a view controller, this is pretty straightforward. For a view controller that is referenced in a storyboard, it suffices to override the getter of the <code>nibName</code> property  in your view controller implementation and specify the name of the corresponding nib file:</p>
 
-    <span class='o'>-</span> <span class='p'>(</span><span class='bp'>NSString</span> <span class='o'>*</span><span class='p'>)</span><span class='n'>nibName</span>
-    <span class='p'>{</span>
-        <span class='k'>return</span> <span class='s'>@&quot;MyViewController&quot;</span><span class='p'>;</span>
-    <span class='p'>}</span>
+<div class="highlight"><pre><code class="language-objc" data-lang="objc"><span class="k">@implementation</span> <span class="nc">MyViewController</span>
 
-    <span class='k'>@end</span></code></pre></div>
+    <span class="o">-</span> <span class="p">(</span><span class="bp">NSString</span> <span class="o">*</span><span class="p">)</span><span class="n">nibName</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="s">@&quot;MyViewController&quot;</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">@end</span></code></pre></div>
+
 <p>You can also override the <code>nibBundle</code> property in case your nib file is not included in the main bundle. Alternatively, if you want to be more explicit, you can override <code>initWithCoder:</code> with the same effect:</p>
-<div class='highlight'><pre><code class='language-objc' data-lang='objc'><span class='k'>@implementation</span> <span class='nc'>MyViewController</span>
 
-    <span class='o'>-</span> <span class='p'>(</span><span class='kt'>instancetype</span><span class='p'>)</span><span class='nl'>initWithCoder</span><span class='p'>:(</span><span class='bp'>NSCoder</span> <span class='o'>*</span><span class='p'>)</span><span class='n'>aDecoder</span>
-    <span class='p'>{</span>
-        <span class='k'>return</span> <span class='p'>[</span><span class='nb'>self</span> <span class='nl'>initWithNibName</span><span class='p'>:</span><span class='s'>@&quot;MyViewController&quot;</span> <span class='nl'>bundle</span><span class='p'>:[</span><span class='bp'>NSBundle</span> <span class='n'>mainBundle</span><span class='p'>]];</span>
-    <span class='p'>}</span>
+<div class="highlight"><pre><code class="language-objc" data-lang="objc"><span class="k">@implementation</span> <span class="nc">MyViewController</span>
 
-    <span class='k'>@end</span></code></pre></div>
+    <span class="o">-</span> <span class="p">(</span><span class="kt">instancetype</span><span class="p">)</span><span class="nl">initWithCoder</span><span class="p">:(</span><span class="bp">NSCoder</span> <span class="o">*</span><span class="p">)</span><span class="n">aDecoder</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="p">[</span><span class="nb">self</span> <span class="nl">initWithNibName</span><span class="p">:</span><span class="s">@&quot;MyViewController&quot;</span> <span class="nl">bundle</span><span class="p">:[</span><span class="bp">NSBundle</span> <span class="n">mainBundle</span><span class="p">]];</span>
+    <span class="p">}</span>
+
+    <span class="k">@end</span></code></pre></div>
+
 <p>In fact, you don’t even need to specify the name of the nib file or the bundle here because they will default to the class name and the main bundle when you specify <code>nil</code>.</p>
 
 <p>But achieving something similar for views is much less obvious. There is no <code>nibName</code> property defined on UIView. And even if you know the name of the interface file, there may be multiple views defined inside it and you cannot rely on the File’s Owner to resolve this like you can with view controllers.</p>
 
-<h2 id="resolving_the_roadblocks">Resolving the roadblocks</h2>
+<h2 id="resolving-the-roadblocks">Resolving the roadblocks</h2>
 
 <p>If you adopt the convention that the first view defined inside the nib is the one you are interested in, you might be tempted to write something like this:</p>
-<div class='highlight'><pre><code class='language-objc' data-lang='objc'><span class='k'>@implementation</span> <span class='nc'>MyView</span>
 
-    <span class='o'>-</span> <span class='p'>(</span><span class='kt'>instancetype</span><span class='p'>)</span><span class='nl'>initWithCoder</span><span class='p'>:(</span><span class='bp'>NSCoder</span> <span class='o'>*</span><span class='p'>)</span><span class='n'>aDecoder</span>
-    <span class='p'>{</span>
-        <span class='bp'>NSBundle</span> <span class='o'>*</span><span class='n'>mainBundle</span> <span class='o'>=</span> <span class='p'>[</span><span class='bp'>NSBundle</span> <span class='n'>mainBundle</span><span class='p'>];</span>
-        <span class='bp'>NSArray</span> <span class='o'>*</span><span class='n'>loadedViews</span> <span class='o'>=</span> <span class='p'>[</span><span class='n'>mainBundle</span> <span class='nl'>loadNibNamed</span><span class='p'>:</span><span class='s'>@&quot;MyView&quot;</span> <span class='nl'>owner</span><span class='p'>:</span><span class='nb'>nil</span> <span class='nl'>options</span><span class='p'>:</span><span class='nb'>nil</span><span class='p'>];</span>
-        <span class='k'>return</span> <span class='p'>[</span><span class='n'>loadedViews</span> <span class='n'>firstObject</span><span class='p'>];</span>
-    <span class='p'>}</span>
+<div class="highlight"><pre><code class="language-objc" data-lang="objc"><span class="k">@implementation</span> <span class="nc">MyView</span>
 
-    <span class='k'>@end</span></code></pre></div>
+    <span class="o">-</span> <span class="p">(</span><span class="kt">instancetype</span><span class="p">)</span><span class="nl">initWithCoder</span><span class="p">:(</span><span class="bp">NSCoder</span> <span class="o">*</span><span class="p">)</span><span class="n">aDecoder</span>
+    <span class="p">{</span>
+        <span class="bp">NSBundle</span> <span class="o">*</span><span class="n">mainBundle</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSBundle</span> <span class="n">mainBundle</span><span class="p">];</span>
+        <span class="bp">NSArray</span> <span class="o">*</span><span class="n">loadedViews</span> <span class="o">=</span> <span class="p">[</span><span class="n">mainBundle</span> <span class="nl">loadNibNamed</span><span class="p">:</span><span class="s">@&quot;MyView&quot;</span> <span class="nl">owner</span><span class="p">:</span><span class="nb">nil</span> <span class="nl">options</span><span class="p">:</span><span class="nb">nil</span><span class="p">];</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">loadedViews</span> <span class="n">firstObject</span><span class="p">];</span>
+    <span class="p">}</span>
+
+    <span class="k">@end</span></code></pre></div>
+
 <p>Unfortunately, the above code results in an infinite loop. When <code>initWithCoder:</code> is first called, the nib is unarchived, but the view inside it is instantiated through the <code>initWithCoder:</code> method, which loads the nib again, etc. I first tried to work around this by calling the super class initializer and checking the amount of subviews afterwards. If there are no subviews, the view is a placeholder view referenced from a storyboard and should be loaded from the nib instead. But if there are subviews, the view has been loaded from the nib already and the recursion should stop:</p>
-<div class='highlight'><pre><code class='language-objc' data-lang='objc'><span class='k'>@implementation</span> <span class='nc'>MyView</span>
 
-    <span class='o'>-</span> <span class='p'>(</span><span class='kt'>instancetype</span><span class='p'>)</span><span class='nl'>initWithCoder</span><span class='p'>:(</span><span class='bp'>NSCoder</span> <span class='o'>*</span><span class='p'>)</span><span class='n'>aDecoder</span>
-    <span class='p'>{</span>
-        <span class='nb'>self</span> <span class='o'>=</span> <span class='p'>[</span><span class='nb'>super</span> <span class='nl'>initWithCoder</span><span class='p'>:</span><span class='n'>aDecoder</span><span class='p'>];</span>
-        <span class='k'>if</span> <span class='p'>(</span><span class='o'>!</span><span class='p'>[</span><span class='nb'>self</span><span class='p'>.</span><span class='n'>subviews</span> <span class='n'>count</span><span class='p'>])</span>
-        <span class='p'>{</span>
-            <span class='bp'>NSBundle</span> <span class='o'>*</span><span class='n'>mainBundle</span> <span class='o'>=</span> <span class='p'>[</span><span class='bp'>NSBundle</span> <span class='n'>mainBundle</span><span class='p'>];</span>
-            <span class='bp'>NSArray</span> <span class='o'>*</span><span class='n'>loadedViews</span> <span class='o'>=</span> <span class='p'>[</span><span class='n'>mainBundle</span> <span class='nl'>loadNibNamed</span><span class='p'>:</span><span class='s'>@&quot;MyView&quot;</span> <span class='nl'>owner</span><span class='p'>:</span><span class='nb'>nil</span> <span class='nl'>options</span><span class='p'>:</span><span class='nb'>nil</span><span class='p'>];</span>
-            <span class='nb'>self</span> <span class='o'>=</span> <span class='p'>[</span><span class='n'>loadedViews</span> <span class='n'>firstObject</span><span class='p'>];</span>
-        <span class='p'>}</span>
-        <span class='k'>return</span> <span class='nb'>self</span><span class='p'>;</span>
-    <span class='p'>}</span>
+<div class="highlight"><pre><code class="language-objc" data-lang="objc"><span class="k">@implementation</span> <span class="nc">MyView</span>
 
-    <span class='k'>@end</span></code></pre></div>
+    <span class="o">-</span> <span class="p">(</span><span class="kt">instancetype</span><span class="p">)</span><span class="nl">initWithCoder</span><span class="p">:(</span><span class="bp">NSCoder</span> <span class="o">*</span><span class="p">)</span><span class="n">aDecoder</span>
+    <span class="p">{</span>
+        <span class="nb">self</span> <span class="o">=</span> <span class="p">[</span><span class="nb">super</span> <span class="nl">initWithCoder</span><span class="p">:</span><span class="n">aDecoder</span><span class="p">];</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">[</span><span class="nb">self</span><span class="p">.</span><span class="n">subviews</span> <span class="n">count</span><span class="p">])</span>
+        <span class="p">{</span>
+            <span class="bp">NSBundle</span> <span class="o">*</span><span class="n">mainBundle</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSBundle</span> <span class="n">mainBundle</span><span class="p">];</span>
+            <span class="bp">NSArray</span> <span class="o">*</span><span class="n">loadedViews</span> <span class="o">=</span> <span class="p">[</span><span class="n">mainBundle</span> <span class="nl">loadNibNamed</span><span class="p">:</span><span class="s">@&quot;MyView&quot;</span> <span class="nl">owner</span><span class="p">:</span><span class="nb">nil</span> <span class="nl">options</span><span class="p">:</span><span class="nb">nil</span><span class="p">];</span>
+            <span class="nb">self</span> <span class="o">=</span> <span class="p">[</span><span class="n">loadedViews</span> <span class="n">firstObject</span><span class="p">];</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="nb">self</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">@end</span></code></pre></div>
+
 <p>When I tried this, the app crashed with an uncaught exception “This coder requires that replaced objects be returned from initWithCoder:”. It took me a while to figure this one out, but eventually I stumbled on a method in <code>NSObject</code> called <code>awakeAfterUsingCoder:</code> (not to be confused with <code>awakeFromNib</code>), which is called after <code>initWithCoder:</code> and allows you to substitute another object in place of the object that was decoded. So this is more or less what we were looking for:</p>
-<div class='highlight'><pre><code class='language-objc' data-lang='objc'><span class='k'>@implementation</span> <span class='nc'>MyView</span>
 
-    <span class='o'>-</span> <span class='p'>(</span><span class='kt'>id</span><span class='p'>)</span><span class='nl'>awakeAfterUsingCoder</span><span class='p'>:(</span><span class='bp'>NSCoder</span> <span class='o'>*</span><span class='p'>)</span><span class='n'>aDecoder</span>
-    <span class='p'>{</span>
-        <span class='k'>if</span> <span class='p'>(</span><span class='o'>!</span><span class='p'>[</span><span class='nb'>self</span><span class='p'>.</span><span class='n'>subviews</span> <span class='n'>count</span><span class='p'>])</span>
-        <span class='p'>{</span>
-            <span class='bp'>NSBundle</span> <span class='o'>*</span><span class='n'>mainBundle</span> <span class='o'>=</span> <span class='p'>[</span><span class='bp'>NSBundle</span> <span class='n'>mainBundle</span><span class='p'>];</span>
-            <span class='bp'>NSArray</span> <span class='o'>*</span><span class='n'>loadedViews</span> <span class='o'>=</span> <span class='p'>[</span><span class='n'>mainBundle</span> <span class='nl'>loadNibNamed</span><span class='p'>:</span><span class='s'>@&quot;MyView&quot;</span> <span class='nl'>owner</span><span class='p'>:</span><span class='nb'>nil</span> <span class='nl'>options</span><span class='p'>:</span><span class='nb'>nil</span><span class='p'>];</span>
-            <span class='k'>return</span> <span class='p'>[</span><span class='n'>loadedViews</span> <span class='n'>firstObject</span><span class='p'>];</span>
-        <span class='p'>}</span>
-        <span class='k'>return</span> <span class='nb'>self</span><span class='p'>;</span>
-    <span class='p'>}</span>
+<div class="highlight"><pre><code class="language-objc" data-lang="objc"><span class="k">@implementation</span> <span class="nc">MyView</span>
 
-    <span class='k'>@end</span></code></pre></div>
-<h2 id="dealing_with_constraints">Dealing with constraints</h2>
+    <span class="o">-</span> <span class="p">(</span><span class="kt">id</span><span class="p">)</span><span class="nl">awakeAfterUsingCoder</span><span class="p">:(</span><span class="bp">NSCoder</span> <span class="o">*</span><span class="p">)</span><span class="n">aDecoder</span>
+    <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">[</span><span class="nb">self</span><span class="p">.</span><span class="n">subviews</span> <span class="n">count</span><span class="p">])</span>
+        <span class="p">{</span>
+            <span class="bp">NSBundle</span> <span class="o">*</span><span class="n">mainBundle</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSBundle</span> <span class="n">mainBundle</span><span class="p">];</span>
+            <span class="bp">NSArray</span> <span class="o">*</span><span class="n">loadedViews</span> <span class="o">=</span> <span class="p">[</span><span class="n">mainBundle</span> <span class="nl">loadNibNamed</span><span class="p">:</span><span class="s">@&quot;MyView&quot;</span> <span class="nl">owner</span><span class="p">:</span><span class="nb">nil</span> <span class="nl">options</span><span class="p">:</span><span class="nb">nil</span><span class="p">];</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">loadedViews</span> <span class="n">firstObject</span><span class="p">];</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="nb">self</span><span class="p">;</span>
+    <span class="p">}</span>
 
-<p>So far, so good. We can now add placeholder views to a storyboard, set their class in the identity inspector, and dynamically replace those placeholders with actual content loaded from nib files, without breaking the view outlets in the storyboard. One problem that remains is that, without any precautions, we lose any view properties that depend on the context inside the storyboard. In order to solve this, we need to transfer the frame and the layout constraints from the placeholder view to the view that was loaded from the nib file, so the end result might look something like this:</p>
-<div class='highlight'><pre><code class='language-objc' data-lang='objc'><span class='k'>@implementation</span> <span class='nc'>MyView</span>
+    <span class="k">@end</span></code></pre></div>
 
-    <span class='o'>-</span> <span class='p'>(</span><span class='kt'>id</span><span class='p'>)</span><span class='nl'>awakeAfterUsingCoder</span><span class='p'>:(</span><span class='bp'>NSCoder</span> <span class='o'>*</span><span class='p'>)</span><span class='n'>aDecoder</span>
-    <span class='p'>{</span>
-        <span class='k'>if</span> <span class='p'>(</span><span class='o'>!</span><span class='p'>[</span><span class='nb'>self</span><span class='p'>.</span><span class='n'>subviews</span> <span class='n'>count</span><span class='p'>])</span>
-        <span class='p'>{</span>
-            <span class='bp'>NSBundle</span> <span class='o'>*</span><span class='n'>mainBundle</span> <span class='o'>=</span> <span class='p'>[</span><span class='bp'>NSBundle</span> <span class='n'>mainBundle</span><span class='p'>];</span>
-            <span class='bp'>NSArray</span> <span class='o'>*</span><span class='n'>loadedViews</span> <span class='o'>=</span> <span class='p'>[</span><span class='n'>mainBundle</span> <span class='nl'>loadNibNamed</span><span class='p'>:</span><span class='s'>@&quot;MyView&quot;</span> <span class='nl'>owner</span><span class='p'>:</span><span class='nb'>nil</span> <span class='nl'>options</span><span class='p'>:</span><span class='nb'>nil</span><span class='p'>];</span>
-            <span class='n'>MyView</span> <span class='o'>*</span><span class='n'>loadedView</span> <span class='o'>=</span> <span class='p'>[</span><span class='n'>loadedViews</span> <span class='n'>firstObject</span><span class='p'>];</span>
+<h2 id="dealing-with-constraints">Dealing with constraints</h2>
+
+<p>So far, so good. We can now add placeholder views to a storyboard, set their class in the identity inspector, and dynamically replace those placeholders with actual content loaded from nib files, without breaking the view outlets in the storyboard. One problem that remains is that, without any precautions, we lose any view properties that depend on the context inside the storyboard. In order to solve this, we need to transfer the frame and the layout constraints from the placeholder view to the view that was  loaded from the nib file, so the end result might look something like this:</p>
+
+<div class="highlight"><pre><code class="language-objc" data-lang="objc"><span class="k">@implementation</span> <span class="nc">MyView</span>
+
+    <span class="o">-</span> <span class="p">(</span><span class="kt">id</span><span class="p">)</span><span class="nl">awakeAfterUsingCoder</span><span class="p">:(</span><span class="bp">NSCoder</span> <span class="o">*</span><span class="p">)</span><span class="n">aDecoder</span>
+    <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">[</span><span class="nb">self</span><span class="p">.</span><span class="n">subviews</span> <span class="n">count</span><span class="p">])</span>
+        <span class="p">{</span>
+            <span class="bp">NSBundle</span> <span class="o">*</span><span class="n">mainBundle</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSBundle</span> <span class="n">mainBundle</span><span class="p">];</span>
+            <span class="bp">NSArray</span> <span class="o">*</span><span class="n">loadedViews</span> <span class="o">=</span> <span class="p">[</span><span class="n">mainBundle</span> <span class="nl">loadNibNamed</span><span class="p">:</span><span class="s">@&quot;MyView&quot;</span> <span class="nl">owner</span><span class="p">:</span><span class="nb">nil</span> <span class="nl">options</span><span class="p">:</span><span class="nb">nil</span><span class="p">];</span>
+            <span class="n">MyView</span> <span class="o">*</span><span class="n">loadedView</span> <span class="o">=</span> <span class="p">[</span><span class="n">loadedViews</span> <span class="n">firstObject</span><span class="p">];</span>
             
-            <span class='n'>loadedView</span><span class='p'>.</span><span class='n'>frame</span> <span class='o'>=</span> <span class='nb'>self</span><span class='p'>.</span><span class='n'>frame</span><span class='p'>;</span>
-            <span class='n'>loadedView</span><span class='p'>.</span><span class='n'>autoresizingMask</span> <span class='o'>=</span> <span class='nb'>self</span><span class='p'>.</span><span class='n'>autoresizingMask</span><span class='p'>;</span>
-            <span class='n'>loadedView</span><span class='p'>.</span><span class='n'>translatesAutoresizingMaskIntoConstraints</span> <span class='o'>=</span>
-                <span class='nb'>self</span><span class='p'>.</span><span class='n'>translatesAutoresizingMaskIntoConstraints</span><span class='p'>;</span>
+            <span class="n">loadedView</span><span class="p">.</span><span class="n">frame</span> <span class="o">=</span> <span class="nb">self</span><span class="p">.</span><span class="n">frame</span><span class="p">;</span>
+            <span class="n">loadedView</span><span class="p">.</span><span class="n">autoresizingMask</span> <span class="o">=</span> <span class="nb">self</span><span class="p">.</span><span class="n">autoresizingMask</span><span class="p">;</span>
+            <span class="n">loadedView</span><span class="p">.</span><span class="n">translatesAutoresizingMaskIntoConstraints</span> <span class="o">=</span>
+                <span class="nb">self</span><span class="p">.</span><span class="n">translatesAutoresizingMaskIntoConstraints</span><span class="p">;</span>
             
-            <span class='k'>for</span> <span class='p'>(</span><span class='bp'>NSLayoutConstraint</span> <span class='o'>*</span><span class='n'>constraint</span> <span class='k'>in</span> <span class='nb'>self</span><span class='p'>.</span><span class='n'>constraints</span><span class='p'>)</span>
-            <span class='p'>{</span>
-                <span class='kt'>id</span> <span class='n'>firstItem</span> <span class='o'>=</span> <span class='n'>constraint</span><span class='p'>.</span><span class='n'>firstItem</span><span class='p'>;</span>
-                <span class='k'>if</span> <span class='p'>(</span><span class='n'>firstItem</span> <span class='o'>==</span> <span class='nb'>self</span><span class='p'>)</span>
-                <span class='p'>{</span>
-                    <span class='n'>firstItem</span> <span class='o'>=</span> <span class='n'>loadedView</span><span class='p'>;</span>
-                <span class='p'>}</span>
-                <span class='kt'>id</span> <span class='n'>secondItem</span> <span class='o'>=</span> <span class='n'>constraint</span><span class='p'>.</span><span class='n'>secondItem</span><span class='p'>;</span>
-                <span class='k'>if</span> <span class='p'>(</span><span class='n'>secondItem</span> <span class='o'>==</span> <span class='nb'>self</span><span class='p'>)</span>
-                <span class='p'>{</span>
-                    <span class='n'>secondItem</span> <span class='o'>=</span> <span class='n'>loadedView</span><span class='p'>;</span>
-                <span class='p'>}</span>
-                <span class='p'>[</span><span class='n'>loadedView</span> <span class='nl'>addConstraint</span><span class='p'>:</span>
-                    <span class='p'>[</span><span class='bp'>NSLayoutConstraint</span> <span class='nl'>constraintWithItem</span><span class='p'>:</span><span class='n'>firstItem</span>
-                                                 <span class='nl'>attribute</span><span class='p'>:</span><span class='n'>constraint</span><span class='p'>.</span><span class='n'>firstAttribute</span>
-                                                 <span class='nl'>relatedBy</span><span class='p'>:</span><span class='n'>constraint</span><span class='p'>.</span><span class='n'>relation</span>
-                                                    <span class='nl'>toItem</span><span class='p'>:</span><span class='n'>secondItem</span>
-                                                 <span class='nl'>attribute</span><span class='p'>:</span><span class='n'>constraint</span><span class='p'>.</span><span class='n'>secondAttribute</span>
-                                                <span class='nl'>multiplier</span><span class='p'>:</span><span class='n'>constraint</span><span class='p'>.</span><span class='n'>multiplier</span>
-                                                  <span class='nl'>constant</span><span class='p'>:</span><span class='n'>constraint</span><span class='p'>.</span><span class='n'>constant</span><span class='p'>]];</span>
-            <span class='p'>}</span>
+            <span class="k">for</span> <span class="p">(</span><span class="bp">NSLayoutConstraint</span> <span class="o">*</span><span class="n">constraint</span> <span class="k">in</span> <span class="nb">self</span><span class="p">.</span><span class="n">constraints</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="kt">id</span> <span class="n">firstItem</span> <span class="o">=</span> <span class="n">constraint</span><span class="p">.</span><span class="n">firstItem</span><span class="p">;</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">firstItem</span> <span class="o">==</span> <span class="nb">self</span><span class="p">)</span>
+                <span class="p">{</span>
+                    <span class="n">firstItem</span> <span class="o">=</span> <span class="n">loadedView</span><span class="p">;</span>
+                <span class="p">}</span>
+                <span class="kt">id</span> <span class="n">secondItem</span> <span class="o">=</span> <span class="n">constraint</span><span class="p">.</span><span class="n">secondItem</span><span class="p">;</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">secondItem</span> <span class="o">==</span> <span class="nb">self</span><span class="p">)</span>
+                <span class="p">{</span>
+                    <span class="n">secondItem</span> <span class="o">=</span> <span class="n">loadedView</span><span class="p">;</span>
+                <span class="p">}</span>
+                <span class="p">[</span><span class="n">loadedView</span> <span class="nl">addConstraint</span><span class="p">:</span>
+                    <span class="p">[</span><span class="bp">NSLayoutConstraint</span> <span class="nl">constraintWithItem</span><span class="p">:</span><span class="n">firstItem</span>
+                                                 <span class="nl">attribute</span><span class="p">:</span><span class="n">constraint</span><span class="p">.</span><span class="n">firstAttribute</span>
+                                                 <span class="nl">relatedBy</span><span class="p">:</span><span class="n">constraint</span><span class="p">.</span><span class="n">relation</span>
+                                                    <span class="nl">toItem</span><span class="p">:</span><span class="n">secondItem</span>
+                                                 <span class="nl">attribute</span><span class="p">:</span><span class="n">constraint</span><span class="p">.</span><span class="n">secondAttribute</span>
+                                                <span class="nl">multiplier</span><span class="p">:</span><span class="n">constraint</span><span class="p">.</span><span class="n">multiplier</span>
+                                                  <span class="nl">constant</span><span class="p">:</span><span class="n">constraint</span><span class="p">.</span><span class="n">constant</span><span class="p">]];</span>
+            <span class="p">}</span>
             
-            <span class='k'>return</span> <span class='n'>loadedView</span><span class='p'>;</span>
-        <span class='p'>}</span>
-        <span class='k'>return</span> <span class='nb'>self</span><span class='p'>;</span>
-    <span class='p'>}</span>
+            <span class="k">return</span> <span class="n">loadedView</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="nb">self</span><span class="p">;</span>
+    <span class="p">}</span>
 
-    <span class='k'>@end</span></code></pre></div>
+    <span class="k">@end</span></code></pre></div>
+
 <p>Now this is quite a bit of boilerplate code, so you probably want to move it to a category on UIView or something like that so your <code>awakeAfterUsingCoder:</code> implementation can be reduced to a one-liner.</p>
 
-<h2 id="intrinsic_size_of_placeholder_views">Intrinsic size of placeholder views</h2>
+<h2 id="intrinsic-size-of-placeholder-views">Intrinsic size of placeholder views</h2>
 
 <p>For components like labels and image views, the intrinsic size can be determined at runtime based on the content. Because of this, Auto Layout does not require you to fully constrain the width and height of these views. Custom views defined in a nib file may also be able to determine their intrinsic size dynamically, but when you add a placeholder view to a view controller in a storyboard, you need to consider this explicitly or Auto Layout will complain about missing constraints. Fortunately there is a dropdown in the Size inspector that allows you to specify that a view is just a placeholder and the width or height will be determined at runtime, when the placeholder has been replaced with actual content:</p>
 
 <p><img src="/images/2014032405.png" alt="Specifying placeholder views" /></p>
 
-<h2 id="an_alternative_approach">An alternative approach</h2>
+<h2 id="an-alternative-approach">An alternative approach</h2>
 
 <p>So far we have assumed that the reusable view is defined as the first top-level object in the interface file. An alternative approach is to set the File’s Owner of the interface file to the reusable view class, and to consider the first top-level object in the interface file to be a subview of the reusable view that contains all the other subviews. Outlets can be linked to the File’s Owner rather than to the top-level (sub)view. This breaks the infinite <code>initWithCoder:</code> loop so you don’t need to rely on <code>awakeAfterUsingCoder:</code>. Instead of replacing the placeholder view, you are adding the subview loaded from the nib file to it. The advantage is that you don’t lose the context dependent view properties of the placeholder. However, in the case of Auto Layout, you still need to ensure that appropriate constraints are applied to the added subview:</p>
-<div class='highlight'><pre><code class='language-objc' data-lang='objc'><span class='k'>@implementation</span> <span class='nc'>MyView</span>
 
-    <span class='o'>-</span> <span class='p'>(</span><span class='kt'>instancetype</span><span class='p'>)</span><span class='nl'>initWithCoder</span><span class='p'>:(</span><span class='bp'>NSCoder</span> <span class='o'>*</span><span class='p'>)</span><span class='n'>aDecoder</span>
-    <span class='p'>{</span>
-        <span class='nb'>self</span> <span class='o'>=</span> <span class='p'>[</span><span class='nb'>super</span> <span class='nl'>initWithCoder</span><span class='p'>:</span><span class='n'>aDecoder</span><span class='p'>];</span>
-        <span class='k'>if</span> <span class='p'>(</span><span class='nb'>self</span><span class='p'>)</span>
-        <span class='p'>{</span>
-            <span class='bp'>NSBundle</span> <span class='o'>*</span><span class='n'>mainBundle</span> <span class='o'>=</span> <span class='p'>[</span><span class='bp'>NSBundle</span> <span class='n'>mainBundle</span><span class='p'>];</span>
-            <span class='bp'>NSArray</span> <span class='o'>*</span><span class='n'>loadedViews</span> <span class='o'>=</span> <span class='p'>[</span><span class='n'>mainBundle</span> <span class='nl'>loadNibNamed</span><span class='p'>:</span><span class='s'>@&quot;MyView&quot;</span> <span class='nl'>owner</span><span class='p'>:</span><span class='nb'>self</span> <span class='nl'>options</span><span class='p'>:</span><span class='nb'>nil</span><span class='p'>];</span>
-            <span class='n'>MyView</span> <span class='o'>*</span><span class='n'>loadedSubview</span> <span class='o'>=</span> <span class='p'>[</span><span class='n'>loadedViews</span> <span class='n'>firstObject</span><span class='p'>];</span>
-            
-            <span class='p'>[</span><span class='nb'>self</span> <span class='nl'>addSubview</span><span class='p'>:</span><span class='n'>loadedSubview</span><span class='p'>];</span>
-            
-            <span class='n'>loadedSubview</span><span class='p'>.</span><span class='n'>translatesAutoresizingMaskIntoConstraints</span> <span class='o'>=</span> <span class='nb'>NO</span><span class='p'>;</span>
-            
-            <span class='p'>[</span><span class='nb'>self</span> <span class='nl'>addConstraint</span><span class='p'>:[</span><span class='nb'>self</span> <span class='nl'>pin</span><span class='p'>:</span><span class='n'>loadedSubview</span> <span class='nl'>attribute</span><span class='p'>:</span><span class='n'>NSLayoutAttributeTop</span><span class='p'>]];</span>
-            <span class='p'>[</span><span class='nb'>self</span> <span class='nl'>addConstraint</span><span class='p'>:[</span><span class='nb'>self</span> <span class='nl'>pin</span><span class='p'>:</span><span class='n'>loadedSubview</span> <span class='nl'>attribute</span><span class='p'>:</span><span class='n'>NSLayoutAttributeLeft</span><span class='p'>]];</span>
-            <span class='p'>[</span><span class='nb'>self</span> <span class='nl'>addConstraint</span><span class='p'>:[</span><span class='nb'>self</span> <span class='nl'>pin</span><span class='p'>:</span><span class='n'>loadedSubview</span> <span class='nl'>attribute</span><span class='p'>:</span><span class='n'>NSLayoutAttributeBottom</span><span class='p'>]];</span>
-            <span class='p'>[</span><span class='nb'>self</span> <span class='nl'>addConstraint</span><span class='p'>:[</span><span class='nb'>self</span> <span class='nl'>pin</span><span class='p'>:</span><span class='n'>loadedSubview</span> <span class='nl'>attribute</span><span class='p'>:</span><span class='n'>NSLayoutAttributeRight</span><span class='p'>]];</span>
-        <span class='p'>}</span>
-        <span class='k'>return</span> <span class='nb'>self</span><span class='p'>;</span>
-    <span class='p'>}</span>
+<div class="highlight"><pre><code class="language-objc" data-lang="objc"><span class="k">@implementation</span> <span class="nc">MyView</span>
 
-    <span class='o'>-</span> <span class='p'>(</span><span class='bp'>NSLayoutConstraint</span> <span class='o'>*</span><span class='p'>)</span><span class='nl'>pin</span><span class='p'>:(</span><span class='kt'>id</span><span class='p'>)</span><span class='n'>item</span> <span class='nl'>attribute</span><span class='p'>:(</span><span class='n'>NSLayoutAttribute</span><span class='p'>)</span><span class='n'>attribute</span>
-    <span class='p'>{</span>
-        <span class='k'>return</span> <span class='p'>[</span><span class='bp'>NSLayoutConstraint</span> <span class='nl'>constraintWithItem</span><span class='p'>:</span><span class='nb'>self</span>
-                                            <span class='nl'>attribute</span><span class='p'>:</span><span class='n'>attribute</span>
-                                            <span class='nl'>relatedBy</span><span class='p'>:</span><span class='n'>NSLayoutRelationEqual</span>
-                                               <span class='nl'>toItem</span><span class='p'>:</span><span class='n'>item</span>
-                                            <span class='nl'>attribute</span><span class='p'>:</span><span class='n'>attribute</span>
-                                           <span class='nl'>multiplier</span><span class='p'>:</span><span class='mf'>1.0</span>
-                                             <span class='nl'>constant</span><span class='p'>:</span><span class='mf'>0.0</span><span class='p'>];</span>
-    <span class='p'>}</span>
+    <span class="o">-</span> <span class="p">(</span><span class="kt">instancetype</span><span class="p">)</span><span class="nl">initWithCoder</span><span class="p">:(</span><span class="bp">NSCoder</span> <span class="o">*</span><span class="p">)</span><span class="n">aDecoder</span>
+    <span class="p">{</span>
+        <span class="nb">self</span> <span class="o">=</span> <span class="p">[</span><span class="nb">super</span> <span class="nl">initWithCoder</span><span class="p">:</span><span class="n">aDecoder</span><span class="p">];</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">self</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="bp">NSBundle</span> <span class="o">*</span><span class="n">mainBundle</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSBundle</span> <span class="n">mainBundle</span><span class="p">];</span>
+            <span class="bp">NSArray</span> <span class="o">*</span><span class="n">loadedViews</span> <span class="o">=</span> <span class="p">[</span><span class="n">mainBundle</span> <span class="nl">loadNibNamed</span><span class="p">:</span><span class="s">@&quot;MyView&quot;</span> <span class="nl">owner</span><span class="p">:</span><span class="nb">self</span> <span class="nl">options</span><span class="p">:</span><span class="nb">nil</span><span class="p">];</span>
+            <span class="n">MyView</span> <span class="o">*</span><span class="n">loadedSubview</span> <span class="o">=</span> <span class="p">[</span><span class="n">loadedViews</span> <span class="n">firstObject</span><span class="p">];</span>
+            
+            <span class="p">[</span><span class="nb">self</span> <span class="nl">addSubview</span><span class="p">:</span><span class="n">loadedSubview</span><span class="p">];</span>
+            
+            <span class="n">loadedSubview</span><span class="p">.</span><span class="n">translatesAutoresizingMaskIntoConstraints</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span>
+            
+            <span class="p">[</span><span class="nb">self</span> <span class="nl">addConstraint</span><span class="p">:[</span><span class="nb">self</span> <span class="nl">pin</span><span class="p">:</span><span class="n">loadedSubview</span> <span class="nl">attribute</span><span class="p">:</span><span class="n">NSLayoutAttributeTop</span><span class="p">]];</span>
+            <span class="p">[</span><span class="nb">self</span> <span class="nl">addConstraint</span><span class="p">:[</span><span class="nb">self</span> <span class="nl">pin</span><span class="p">:</span><span class="n">loadedSubview</span> <span class="nl">attribute</span><span class="p">:</span><span class="n">NSLayoutAttributeLeft</span><span class="p">]];</span>
+            <span class="p">[</span><span class="nb">self</span> <span class="nl">addConstraint</span><span class="p">:[</span><span class="nb">self</span> <span class="nl">pin</span><span class="p">:</span><span class="n">loadedSubview</span> <span class="nl">attribute</span><span class="p">:</span><span class="n">NSLayoutAttributeBottom</span><span class="p">]];</span>
+            <span class="p">[</span><span class="nb">self</span> <span class="nl">addConstraint</span><span class="p">:[</span><span class="nb">self</span> <span class="nl">pin</span><span class="p">:</span><span class="n">loadedSubview</span> <span class="nl">attribute</span><span class="p">:</span><span class="n">NSLayoutAttributeRight</span><span class="p">]];</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="nb">self</span><span class="p">;</span>
+    <span class="p">}</span>
 
-    <span class='k'>@end</span></code></pre></div>
-<h2 id="bottom_line">Bottom line</h2>
+    <span class="o">-</span> <span class="p">(</span><span class="bp">NSLayoutConstraint</span> <span class="o">*</span><span class="p">)</span><span class="nl">pin</span><span class="p">:(</span><span class="kt">id</span><span class="p">)</span><span class="n">item</span> <span class="nl">attribute</span><span class="p">:(</span><span class="n">NSLayoutAttribute</span><span class="p">)</span><span class="n">attribute</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">NSLayoutConstraint</span> <span class="nl">constraintWithItem</span><span class="p">:</span><span class="nb">self</span>
+                                            <span class="nl">attribute</span><span class="p">:</span><span class="n">attribute</span>
+                                            <span class="nl">relatedBy</span><span class="p">:</span><span class="n">NSLayoutRelationEqual</span>
+                                               <span class="nl">toItem</span><span class="p">:</span><span class="n">item</span>
+                                            <span class="nl">attribute</span><span class="p">:</span><span class="n">attribute</span>
+                                           <span class="nl">multiplier</span><span class="p">:</span><span class="mf">1.0</span>
+                                             <span class="nl">constant</span><span class="p">:</span><span class="mf">0.0</span><span class="p">];</span>
+    <span class="p">}</span>
+
+    <span class="k">@end</span></code></pre></div>
+
+<h2 id="bottom-line">Bottom line</h2>
 
 <p>As your project grows, being able to reuse interface components becomes gradually more important. Because of this, it is worth investing some effort right at the start to develop some generic reuse strategies that cover the edge cases. I still hope that future versions of Xcode will make it easier to reuse views in storyboards, but for now I manage to get by with some common UIView categories.</p>
+
             
 <div class="social">
     
