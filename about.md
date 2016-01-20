@@ -13,3 +13,4 @@ Conference talks:
 - mdevcon 2014 -- Amsterdam -- [Building an iBeacon killer app](https://speakerdeck.com/hverlind/building-an-ibeacon-killer-app)
 - \#Pragma 2014 -- Milan -- [Seamless device communication](https://speakerdeck.com/hverlind/seamless-device-communication)
 - \#Pragma 2015 -- Florence -- [State of Statelessness](https://realm.io/news/pragma-hannes-verlinde-statelessness-react-native/)
+- MCE 2016 -- Warsaw
